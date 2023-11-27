@@ -4,12 +4,10 @@
 #include <string>
 
 enum class Colour { Black, White, Green, Blue };
-enum class PieceType { King, Queen, Bishop, Knight, Rook, Pawn, NullPiece };
 
 class Piece {
     int x, y;
     Colour playerColour;
-    PieceType type;
 
   public:
     Piece(int x, int y, Colour playerColour);
@@ -18,7 +16,6 @@ class Piece {
     int getX() const;
     int getY() const;
     void setPosition(int newX, int newY);
-    PieceType getType() const;
     Colour getColour() const;
 
     // Virtual methods for move validation and success
