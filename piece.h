@@ -3,10 +3,11 @@
 
 #include <string>
 #include "board.h"
+#include "subject.h"
 
 enum class Colour { Black = 1, White, Green, Blue };
 
-class Piece: public Observer {
+class Piece: public Subject {
     int x, y;
     Colour playerColour;
     const Board& board;
