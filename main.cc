@@ -1,4 +1,5 @@
 #include "board.h"
+#include "queen.h"
 #include <iostream>
 #include <string>
 using namespace std;
@@ -17,13 +18,16 @@ void printBoard(Board &chessBoard) {
                 }
             }
         }
+        cout << endl;
     }
 }
 
 int main() {
     Board chessBoard;
-    chessBoard.addPiece('Q', 0, 0, 1);
-    chessBoard.addPiece('q', 2, 2, 2);
+    bool y = chessBoard.moveSuccess(0, 3, 4, 3);
+    if (y) {
+        cout << "moved";
+    }
 
     printBoard(chessBoard);
 }

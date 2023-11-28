@@ -1,5 +1,6 @@
 #include "queen.h"
 #include <cmath>
+#include <iostream>
 
 Queen::Queen(int x, int y, Colour playerColour, const Board& board) 
     : Piece(x, y, playerColour, board, Type::Queen) {}
@@ -23,10 +24,12 @@ MoveResult Queen::moveSuccess(int newX, int newY) {
 bool Queen::isValidMove(int newX, int newY) const {
     int deltaX = newX - getX();
     int deltaY = newY - getY();
+    std::cout << getX() << " " << getY();
 
     bool isHorizontalVertical = (deltaX == 0 || deltaY == 0);
     bool isDiagonal = (abs(deltaX) == abs(deltaY));
     if (!isHorizontalVertical && !isDiagonal) {
+        std::cout << "false";
         return false;
     }
 

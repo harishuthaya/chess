@@ -1,8 +1,12 @@
 #include "board.h"
+#include <iostream>
 using namespace std;
 
 Board::Board(): board{} {
-    board.resize(boardSize, vector<unique_ptr<Piece>>(boardSize, nullptr));
+    board.resize(boardSize);
+    for (int i = 0; i < boardSize; ++i) {
+        board[i].resize(boardSize);
+    }
     // Adds the black pieces
     this->addPiece('r', 0, 0, 1);
     this->addPiece('n', 0, 1, 1);
@@ -40,7 +44,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
         return false;
     }
 
-    MoveResult result = board[x][y].get()->moveSuccess(newX, newY);
+    MoveResult result = board[x][y]->moveSuccess(newX, newY);
     if (result == MoveResult::Failure) {
         return false;
     } else if (result == MoveResult::Move) {
@@ -60,18 +64,33 @@ WinState Board::getWinState() {
 void Board::addPiece(char piece, int x, int y, int playerID) {
     switch(piece) {
         case 'r':
+            break;
         case 'n':
+            break;
         case 'b':
+            break;
         case 'q':
+            board[x][y] = make_unique<Queen>(x, y, Colour::White, *this);
+            break;
         case 'k':
+            break;
         case 'p':
+            break;
         case 'R':
+            break;
         case 'N':
+            break;
         case 'B':
+            break;
         case 'Q':
-            board[x][y] = make_unique<Queen>(x, y, playerID, *this);
+            board[x][y] = make_unique<Queen>(x, y, Colour::Black, *this);
+            break;
         case 'K':
+            break;
         case 'P':
+            break;
+        default: 
+            break;
     }
 }
 

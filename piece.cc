@@ -21,6 +21,10 @@ void Piece::setPosition(int newX, int newY) {
     y = newY;
 }
 
- bool Piece::isEmpty() const {
+bool Piece::isEmpty() const {
     return pieceType == Type::Nullpiece;
- };
+};
+
+Type Piece::getType() const {
+    return pieceType;
+}

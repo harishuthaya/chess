@@ -26,6 +26,7 @@ class Piece: public Subject {
     void setPosition(int newX, int newY);
     Colour getColour() const;
     bool isEmpty() const;
+    Type getType() const;
 
     // Virtual methods for move validation and success
     virtual MoveResult moveSuccess(int newX, int newY) = 0;
