@@ -6,7 +6,7 @@
 
 enum class Colour { Black = 1, White, Green, Blue };
 
-class Piece {
+class Piece: public Observer {
     int x, y;
     Colour playerColour;
     const Board& board;
