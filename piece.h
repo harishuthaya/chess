@@ -19,7 +19,7 @@ class Piece {
     Colour getColour() const;
 
     // Virtual methods for move validation and success
-    virtual bool moveSuccess(const std::string& direction, int steps) = 0;
+    virtual bool moveSuccess(int newX, int newY) = 0;
     virtual bool isValidMove(int newX, int newY) const = 0;
 };
 
