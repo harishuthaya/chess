@@ -4,15 +4,15 @@
 #include <string>
 #include "board.h"
 
-enum class Colour { Black, White, Green, Blue };
+enum class Colour { Black = 1, White, Green, Blue };
 
 class Piece {
     int x, y;
     Colour playerColour;
-    Board* board;
+    const Board& board;
 
   public:
-    Piece(int x, int y, Colour playerColour, Board* board);
+    Piece(int x, int y, Colour playerColour, const Board& board);
     virtual ~Piece() = default;
 
     int getX() const;
