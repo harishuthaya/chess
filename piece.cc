@@ -1,7 +1,8 @@
 #include "piece.h"
+using namespace std;
 
-Piece::Piece(int x, int y, Colour playerColour) 
-    : x{x}, y{x}, playerColour{playerColour} {}
+Piece::Piece(int x, int y, Colour playerColour, Board* board) 
+    : x{x}, y{x}, playerColour{playerColour}, board{board} {}
 
 int Piece::getX() const {
     return x;

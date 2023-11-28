@@ -2,15 +2,17 @@
 #define PIECE_H
 
 #include <string>
+#include "board.h"
 
 enum class Colour { Black, White, Green, Blue };
 
 class Piece {
     int x, y;
     Colour playerColour;
+    Board* board;
 
   public:
-    Piece(int x, int y, Colour playerColour);
+    Piece(int x, int y, Colour playerColour, Board* board);
     virtual ~Piece() = default;
 
     int getX() const;

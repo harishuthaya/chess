@@ -1,8 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <vector.h>
-#include <string.h>
+#include <vector>
+#include <string>
 #include "piece.h"
 
 enum class WinState { Win, Lose, Tie };
