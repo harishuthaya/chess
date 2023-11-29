@@ -4,16 +4,25 @@
 #include <string>
 using namespace std;
 
-void printBoard(Board &chessBoard) {
-    for (int i = 0; i < chessBoard.getSize(); i++) {
-        for (int j = 0; j < chessBoard.getSize(); j++) {
-            Piece* piece = chessBoard.getPiece(i, j);
-            if (piece->getType() == Type::Nullpiece) {
+void printBoard(Board &chessBoard)
+{
+    for (int i = 0; i < chessBoard.getSize(); i++)
+    {
+        for (int j = 0; j < chessBoard.getSize(); j++)
+        {
+            Piece *piece = chessBoard.getPiece(i, j);
+            if (piece->getType() == Type::Nullpiece)
+            {
                 cout << '_';
-            } else {
-                if (piece->getColour() == Colour::Black) {
+            }
+            else
+            {
+                if (piece->getColour() == Colour::Black)
+                {
                     cout << 'Q';
-                } else {
+                }
+                else
+                {
                     cout << 'q';
                 }
             }
@@ -22,12 +31,29 @@ void printBoard(Board &chessBoard) {
     }
 }
 
-int main() {
+int main()
+{
     Board chessBoard;
-    bool y = chessBoard.moveSuccess(0, 3, 4, 3);
-    if (y) {
-        cout << "moved";
+    char c;
+    while (cin >> c)
+    {
+        if (c == 'p')
+        {
+            printBoard(chessBoard);
+        }
+        else if (c == 'a')
+        {
+            char c;
+            cin >> c;
+            int a, b, d;
+            cin >> a >> b >> d;
+            chessBoard.addPiece(c, a, b, d);
+        }
+        else
+        {
+            int a, b, c, d;
+            cin >> a >> b >> c >> d;
+            bool y = chessBoard.moveSuccess(a, b, c, d);
+        }
     }
-
-    printBoard(chessBoard);
 }
