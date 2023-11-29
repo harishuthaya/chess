@@ -26,7 +26,7 @@ int main() {
     Board chessBoard;
     bool y = chessBoard.moveSuccess(0, 3, 4, 3);
     if (y) {
-        cout << "moved";
+        cout << "moved" << endl;
     }
 
     printBoard(chessBoard);
