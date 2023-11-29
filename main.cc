@@ -24,21 +24,10 @@ void printBoard(Board &chessBoard) {
 
 int main() {
     Board chessBoard;
-    char command; // m for move and a for add and p for print
-    while (cin >> command) {
-        if (command == 'm') {
-            int a, b, c, d;
-            cin >> a >> b >> c >> d;
-
-            bool y = chessBoard.moveSuccess(a, b, c, d);
-        } else if (command == 'p') {
-            printBoard(chessBoard);
-        } else {
-            char d;
-            int a, b, c;
-            cin >> d >> a >> b;
-            chessBoard.addPiece(d, a, b, c);
-            printBoard(chessBoard);
-        }
+    bool y = chessBoard.moveSuccess(0, 3, 4, 3);
+    if (y) {
+        cout << "moved";
     }
+
+    printBoard(chessBoard);
 }

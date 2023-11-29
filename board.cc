@@ -47,7 +47,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
     if (x == newX && y == newY) {
         return false;
     }
-
+    
     MoveResult result = board[x][y]->moveSuccess(newX, newY);
     if (result == MoveResult::Failure) {
         return false;
