@@ -8,7 +8,7 @@ void printBoard(Board &chessBoard) {
     for (int i = 0; i < chessBoard.getSize(); i++) {
         for (int j = 0; j < chessBoard.getSize(); j++) {
             Piece* piece = chessBoard.getPiece(i, j);
-            if (!piece) {
+            if (piece->getType() == Type::Nullpiece) {
                 cout << '_';
             } else {
                 if (piece->getColour() == Colour::Black) {
@@ -24,10 +24,21 @@ void printBoard(Board &chessBoard) {
 
 int main() {
     Board chessBoard;
-    bool y = chessBoard.moveSuccess(0, 3, 4, 3);
-    if (y) {
-        cout << "moved";
-    }
+    char command; // m for move and a for add and p for print
+    while (cin >> command) {
+        if (command == 'm') {
+            int a, b, c, d;
+            cin >> a >> b >> c >> d;
 
-    printBoard(chessBoard);
+            bool y = chessBoard.moveSuccess(a, b, c, d);
+        } else if (command == 'p') {
+            printBoard(chessBoard);
+        } else {
+            char d;
+            int a, b, c;
+            cin >> d >> a >> b;
+            chessBoard.addPiece(d, a, b, c);
+            printBoard(chessBoard);
+        }
+    }
 }

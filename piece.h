@@ -6,7 +6,7 @@
 
 class Board;
 
-enum class Colour { Black = 1, White, Green, Blue };
+enum class Colour { Black = 1, White, Green, Blue, NullColor };
 enum class MoveResult { Move, Capture, Failure };
 enum class Type { Queen, King, Nullpiece };
 

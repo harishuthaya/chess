@@ -6,6 +6,7 @@
 #include <memory>
 #include "piece.h"
 #include "queen.h"
+#include "nullPiece.h"
 
 class Piece;
 

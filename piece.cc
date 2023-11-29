@@ -2,7 +2,7 @@
 using namespace std;
 
 Piece::Piece(int x, int y, Colour playerColour, const Board& board, Type pieceType) 
-    : x{x}, y{x}, playerColour{playerColour}, board{board}, pieceType{pieceType} {}
+    : x{x}, y{y}, playerColour{playerColour}, board{board}, pieceType{pieceType} {}
 
 int Piece::getX() const {
     return x;

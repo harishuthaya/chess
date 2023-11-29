@@ -9,27 +9,23 @@ MoveResult Queen::moveSuccess(int newX, int newY) {
     if (!isValidMove(newX, newY)) {
         return MoveResult::Failure;
     }
-
     Piece* targetPiece = board.getPiece(newX, newY);
-    if (targetPiece->isEmpty() && targetPiece->getColour() != this->getColour()) {
+    if (!targetPiece->isEmpty() && targetPiece->getColour() != this->getColour()) {
         setPosition(newX, newY);
         return MoveResult::Capture;
     }
 
     setPosition(newX, newY);
     return MoveResult::Move;
-
 }
 
 bool Queen::isValidMove(int newX, int newY) const {
     int deltaX = newX - getX();
     int deltaY = newY - getY();
-    std::cout << getX() << " " << getY();
 
     bool isHorizontalVertical = (deltaX == 0 || deltaY == 0);
     bool isDiagonal = (abs(deltaX) == abs(deltaY));
     if (!isHorizontalVertical && !isDiagonal) {
-        std::cout << "false";
         return false;
     }
 
@@ -40,7 +36,7 @@ bool Queen::isValidMove(int newX, int newY) const {
     int currentY = getY() + stepY;
 
     while (currentX != newX || currentY != newY) {
-        if (board.getPiece(currentX, currentY)->isEmpty()) {
+        if (!board.getPiece(currentX, currentY)->isEmpty()) {
             return false;
         }
         currentX += stepX;
@@ -48,10 +44,9 @@ bool Queen::isValidMove(int newX, int newY) const {
     }
 
     Piece* destinationPiece = board.getPiece(newX, newY);
-    if (destinationPiece->isEmpty() && destinationPiece->getColour() == this->getColour()) {
-        return false;
+    if (destinationPiece->isEmpty() || destinationPiece->getColour() != this->getColour()) {    
+        return true;
     }
 
-    return true;
-
+    return false;
 }

@@ -6,6 +6,10 @@ Board::Board(): board{} {
     board.resize(boardSize);
     for (int i = 0; i < boardSize; ++i) {
         board[i].resize(boardSize);
+
+        for (int j = 0; j < boardSize; ++j) {
+            board[i][j] = make_unique<NullPiece>(i, j, *this);
+        }
     }
     // Adds the black pieces
     this->addPiece('r', 0, 0, 1);
@@ -51,7 +55,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
         swap(board[x][y], board[newX][newY]);
     } else {
         board[newX][newY] = std::move(board[x][y]);
-        board[x][y] = nullptr;
+        board[x][y] = make_unique<NullPiece>(x, y, *this);
     }
 
     return true;
