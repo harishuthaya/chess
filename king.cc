@@ -20,10 +20,7 @@ MoveResult King::moveSuccess(int newX, int newY) {
     this->hasMoved = true;
 
     if (!targetPiece->isEmpty() && targetPiece->getColour() != this->getColour()) {
-        int oldX = x;
-        int oldY = y;
         setPosition(newX, newY);
-        notifyObservers(oldX, oldY);
         return MoveResult::Capture;
     }
 

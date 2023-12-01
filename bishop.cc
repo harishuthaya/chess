@@ -12,10 +12,7 @@ MoveResult Bishop::moveSuccess(int newX, int newY) {
     }
     Piece* targetPiece = board.getPiece(newX, newY);
     if (!targetPiece->isEmpty() && targetPiece->getColour() != this->getColour()) {
-        int oldX = x;
-        int oldY = y;
         setPosition(newX, newY);
-        notifyObservers(oldX, oldY);
         return MoveResult::Capture;
     }
 
