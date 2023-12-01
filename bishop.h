@@ -3,6 +3,7 @@
 
 #include "piece.h"
 #include "board.h"
+#include "knight.h"
 
 class Bishop : public Piece {
 public:

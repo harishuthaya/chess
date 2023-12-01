@@ -52,8 +52,6 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
     MoveResult result = board[x][y]->moveSuccess(newX, newY);
     if (result == MoveResult::Failure) {
         return false;
-    } else if (result == MoveResult::Move) {
-        swap(board[x][y], board[newX][newY]);
     } else {
         board[newX][newY] = std::move(board[x][y]);
         board[x][y] = make_unique<NullPiece>(x, y, *this);
@@ -86,7 +84,7 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
             board[x][y] = make_unique<Queen>(x, y, Colour::Black, *this);
             break;
         case 'k':
-            board[x][y] = make_unique<NullPiece>(x, y, *this);
+            board[x][y] = make_unique<Knight>(x, y, Colour::Black, *this);
             break;
         case 'p':
             board[x][y] = make_unique<NullPiece>(x, y, *this);
@@ -104,7 +102,7 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
             board[x][y] = make_unique<Queen>(x, y, Colour::White, *this);
             break;
         case 'K':
-            board[x][y] = make_unique<NullPiece>(x, y, *this);
+            board[x][y] = make_unique<Knight>(x, y, Colour::White, *this);
             break;
         case 'P':
             board[x][y] = make_unique<NullPiece>(x, y, *this);
@@ -117,6 +115,10 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
 }
 
 void Board::removePiece(int x, int y) {
+    if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
+        return;
+    }
+    
     if (board[x][y].get()->getType() != Type::Nullpiece) {
         board[x][y] = make_unique<NullPiece>(x, y, *this);
     }
