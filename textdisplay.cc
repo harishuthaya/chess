@@ -36,7 +36,11 @@ void TextDisplay::notify(const Piece &p, int oldX, int oldY) {
 				c = 'B';
 				break;
 			case Type::Knight:
-				c = 'K';
+				c = 'N';
+				break;
+			case Type::Rook:
+				c = 'R';
+				break;
 			default: 
 				break;
 			}

@@ -36,9 +36,6 @@ bool King::isValidMove(int newX, int newY) const {
         return false;
     }
 
-    int stepX = (deltaX == 0) ? 0 : (deltaX / abs(deltaX));
-    int stepY = (deltaY == 0) ? 0 : (deltaY / abs(deltaY));
-
     Piece *destinationPiece = board.getPiece(newX, newY);
     if (destinationPiece->isEmpty() || destinationPiece->getColour() != this->getColour()) {
         return true;

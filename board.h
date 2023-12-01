@@ -9,6 +9,8 @@
 #include "nullPiece.h"
 #include "bishop.h"
 #include "textdisplay.h"
+#include "king.h"
+#include "rook.h"
 
 class Piece;
 
@@ -19,6 +21,9 @@ class Board {
     WinState winState;
     const int boardSize = 8;
     TextDisplay *td;
+    Piece* whiteKing;
+    Piece* blackKing;
+
     public:
         Board(TextDisplay *td);
         virtual ~Board() = default;
@@ -28,6 +33,7 @@ class Board {
         void addPiece(char piece, int x, int y, int playerID);
         void removePiece(int x, int y);
         int getSize() const;
+        bool isUnderAttack(int x, int y, Colour playerColour) const;
         Piece* getPiece(int x, int y) const;
         friend std::ostream &operator<<(std::ostream &out, const Board &b);
 };

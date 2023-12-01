@@ -72,10 +72,10 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
     board[x][y].reset();
     switch(piece) {
         case 'r':
-            board[x][y] = make_unique<NullPiece>(x, y, *this);
+            board[x][y] = make_unique<Rook>(x, y, Colour::Black, *this);
             break;
         case 'n':
-            board[x][y] = make_unique<NullPiece>(x, y, *this);
+            board[x][y] = make_unique<Knight>(x, y, Colour::Black, *this);
             break;
         case 'b':
             board[x][y] = make_unique<Bishop>(x, y, Colour::Black, *this);
@@ -84,16 +84,17 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
             board[x][y] = make_unique<Queen>(x, y, Colour::Black, *this);
             break;
         case 'k':
-            board[x][y] = make_unique<Knight>(x, y, Colour::Black, *this);
+            board[x][y] = make_unique<King>(x, y, Colour::Black, *this);
+            blackKing = board[x][y].get();
             break;
         case 'p':
             board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
         case 'R':
-            board[x][y] = make_unique<NullPiece>(x, y, *this);
+            board[x][y] = make_unique<Rook>(x, y, Colour::White, *this);
             break;
         case 'N':
-            board[x][y] = make_unique<NullPiece>(x, y, *this);
+            board[x][y] = make_unique<Knight>(x, y, Colour::White, *this);
             break;
         case 'B':
              board[x][y] = make_unique<Bishop>(x, y, Colour::White, *this);
@@ -102,7 +103,8 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
             board[x][y] = make_unique<Queen>(x, y, Colour::White, *this);
             break;
         case 'K':
-            board[x][y] = make_unique<Knight>(x, y, Colour::White, *this);
+            board[x][y] = make_unique<King>(x, y, Colour::White, *this);
+            whiteKing = board[x][y].get();
             break;
         case 'P':
             board[x][y] = make_unique<NullPiece>(x, y, *this);
@@ -127,6 +129,21 @@ void Board::removePiece(int x, int y) {
 
 int Board::getSize() const {
     return boardSize;
+}
+
+bool Board::isUnderAttack(int x, int y, Colour playerColour) const {
+    for (int i = 0; i < boardSize; ++i) {
+        for (int j = 0; j < boardSize; ++j) {
+            Piece* piece = getPiece(i, j);
+            if (piece && piece->getColour() != playerColour) {
+                // Check if the opponent's piece can legally move to the (x, y) position
+                if (piece->isValidMove(x, y)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 Piece* Board::getPiece(int x, int y) const {
