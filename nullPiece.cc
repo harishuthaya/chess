@@ -1,7 +1,7 @@
 #include "nullPiece.h"
 
 NullPiece::NullPiece(int x, int y, const Board& board) 
-    : Piece(x, y, Colour::NullColor, board, Type::Nullpiece) {}
+    : Piece(x, y, Colour::NullColour, board, Type::Nullpiece) {}
 
 bool NullPiece::isValidMove(int newX, int newY) const {
     return false;

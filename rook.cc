@@ -4,7 +4,7 @@
 using namespace std;
 
 Rook::Rook(int x, int y, Colour playerColour, const Board& board):
-    Piece(x, y, playerColour, board, Type::Rook): hasMoved{false} {
+    Piece(x, y, playerColour, board, Type::Rook). hasMoved{false} {
 
 }
 

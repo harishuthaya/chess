@@ -28,3 +28,11 @@ bool Piece::isEmpty() const {
 Type Piece::getType() const {
     return pieceType;
 }
+
+void Piece::attach(Observer *o) {
+    observers.emplace_back(o);
+}
+
+void Piece::notifyObservers() const {
+    for (auto ob : observers) ob->notify(*this);
+}

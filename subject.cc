@@ -6,7 +6,7 @@ Subject::Subject() {}
 // Subject::~Subject() {}
 
 void Subject::attach(Observer *o) {
-  observers.emplace_back(o);
+    observers.emplace_back(o);
 }
 
 // void Subject::detach(Observer *o) {
@@ -19,7 +19,7 @@ void Subject::attach(Observer *o) {
 // }
 
 void Subject::notifyObservers() const {
-  for (auto ob : observers) ob->notify();
+  // for (auto ob : observers) ob->notify(*this);
 }
 
 
