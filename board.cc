@@ -121,6 +121,7 @@ void Board::removePiece(int x, int y) {
     
     if (board[x][y].get()->getType() != Type::Nullpiece) {
         board[x][y] = make_unique<NullPiece>(x, y, *this);
+        board[x][y]->attach(td);
     }
 }
 
