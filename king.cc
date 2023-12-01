@@ -1,15 +1,15 @@
-#include "rook.h"
+#include "king.h"
 #include <cmath>
 #include <iostream>
 using namespace std;
 
-King::Rook(int x, int y, Colour playerColour, const Board& board):
+King::King(int x, int y, Colour playerColour, const Board& board):
     Piece(x, y, playerColour, board, Type::King), hasMoved{false} {
 
 }
 
 bool King::getHasMoved() const {
-    return this->hasMoved();
+    return this->hasMoved;
 }
 
 MoveResult King::moveSuccess(int newX, int newY) {
@@ -19,7 +19,7 @@ MoveResult King::moveSuccess(int newX, int newY) {
     Piece* targetPiece = board.getPiece(newX, newY);
     this->hasMoved = true;
 
-    if (!targetPiece.isEmpty() && targetPiece.getColour() != this->getColour()) {
+    if (!targetPiece->isEmpty() && targetPiece->getColour() != this->getColour()) {
         int oldX = x;
         int oldY = y;
         setPosition(newX, newY);

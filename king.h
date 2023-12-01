@@ -4,7 +4,7 @@
 #include "piece.h"
 #include "board.h"
 
-class King {
+class King: public Piece {
     bool hasMoved;
     
     King(int x, int y, Colour playerColour, const Board& board);
@@ -12,5 +12,5 @@ class King {
     MoveResult moveSuccess(int newX, int newY) override;
     bool isValidMove(int newX, int newY) const override;
     bool getHasMoved() const;
-}
+};
 #endif

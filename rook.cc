@@ -4,12 +4,12 @@
 using namespace std;
 
 Rook::Rook(int x, int y, Colour playerColour, const Board& board):
-    Piece(x, y, playerColour, board, Type::Rook). hasMoved{false} {
+    Piece(x, y, playerColour, board, Type::Rook), hasMoved{false} {
 
 }
 
 bool Rook::getHasMoved() const {
-    return this->hasMoved();
+    return this->hasMoved;
 }
 
 MoveResult Rook::moveSuccess(int newX, int newY) {
@@ -19,7 +19,7 @@ MoveResult Rook::moveSuccess(int newX, int newY) {
     Piece* targetPiece = board.getPiece(newX, newY);
     this->hasMoved = true;
 
-    if (!targetPiece.isEmpty() && targetPiece.getColour() != this->getColour()) {
+    if (!targetPiece->isEmpty() && targetPiece->getColour() != this->getColour()) {
         int oldX = x;
         int oldY = y;
         setPosition(newX, newY);
@@ -45,7 +45,7 @@ bool Rook::isValidMove(int newX, int newY) const {
     int currentX = getX() + stepX;
     int currentY = getY() + stepY;
 
-    while (currentX != newX || currentY != currentY) {
+    while (currentX != newX || currentY != newY) {
         if (!board.getPiece(currentX, currentY)->isEmpty()) {
             return false;
         }
