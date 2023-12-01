@@ -19,11 +19,19 @@ void printBoard(Board &chessBoard)
             {
                 if (piece->getColour() == Colour::Black)
                 {
-                    cout << 'Q';
+                    if (piece->getType() == Type::Queen) {
+                        cout << 'q';
+                    } else if (piece->getType() == Type::Bishop) {
+                        cout << 'b';
+                    }
                 }
                 else
                 {
-                    cout << 'q';
+                    if (piece->getType() == Type::Queen) {
+                        cout << 'Q';
+                    } else if (piece->getType() == Type::Bishop) {
+                        cout << 'B';
+                    }
                 }
             }
         }

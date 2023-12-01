@@ -66,15 +66,20 @@ WinState Board::getWinState() {
 }
 
 void Board::addPiece(char piece, int x, int y, int playerID) {
+    if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
+        return;
+    }
+
     switch(piece) {
         case 'r':
             break;
         case 'n':
             break;
         case 'b':
+            board[x][y] = make_unique<Bishop>(x, y, Colour::Black, *this);
             break;
         case 'q':
-            board[x][y] = make_unique<Queen>(x, y, Colour::White, *this);
+            board[x][y] = make_unique<Queen>(x, y, Colour::Black, *this);
             break;
         case 'k':
             break;
@@ -85,9 +90,10 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
         case 'N':
             break;
         case 'B':
+             board[x][y] = make_unique<Bishop>(x, y, Colour::White, *this);
             break;
         case 'Q':
-            board[x][y] = make_unique<Queen>(x, y, Colour::Black, *this);
+            board[x][y] = make_unique<Queen>(x, y, Colour::White, *this);
             break;
         case 'K':
             break;
@@ -99,7 +105,9 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
 }
 
 void Board::removePiece(int x, int y) {
-    board[x][y].reset(nullptr);
+    if (board[x][y].get()->getType() != Type::Nullpiece) {
+        board[x][y] = make_unique<NullPiece>(x, y, *this);
+    }
 }
 
 int Board::getSize() const {

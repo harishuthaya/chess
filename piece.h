@@ -8,7 +8,7 @@ class Board;
 
 enum class Colour { Black = 1, White, Green, Blue, NullColor };
 enum class MoveResult { Move, Capture, Failure };
-enum class Type { Queen, King, Nullpiece };
+enum class Type { Queen, King, Bishop, Nullpiece };
 
 class Piece: public Subject {
   protected:

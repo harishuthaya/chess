@@ -7,6 +7,7 @@
 #include "piece.h"
 #include "queen.h"
 #include "nullPiece.h"
+#include "bishop.h"
 
 class Piece;
 
