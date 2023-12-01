@@ -12,7 +12,7 @@ class TextDisplay: public Observer {
  public:
   TextDisplay(int n);
 
-  void notify(const Piece &p) override;
+  void notify(const Piece &p, int oldX, int oldY) override;
 
   ~TextDisplay();
 

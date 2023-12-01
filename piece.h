@@ -2,7 +2,8 @@
 #define PIECE_H
 
 #include <string>
-#include "subject.h"
+#include <vector>
+#include "observer.h"
 
 class Board;
 
@@ -10,7 +11,7 @@ enum class Colour { Black = 1, White, Green, Blue, NullColour };
 enum class MoveResult { Move, Capture, Failure };
 enum class Type { Queen, King, Bishop, Nullpiece };
 
-class Piece: public Subject {
+class Piece {
   protected:
     int x, y;
     Colour playerColour;
@@ -29,7 +30,7 @@ class Piece: public Subject {
     bool isEmpty() const;
     Type getType() const;
     void attach(Observer *o);
-    void notifyObservers() const;
+    void notifyObservers(int oldX, int oldY) const;
 
     // Virtual methods for move validation and success
     virtual MoveResult moveSuccess(int newX, int newY) = 0;

@@ -2,13 +2,14 @@
 #include <iostream>
 using namespace std;
 
-Board::Board(): board{} {
+Board::Board(TextDisplay *td): board{}, td{td} {
     board.resize(boardSize);
     for (int i = 0; i < boardSize; ++i) {
         board[i].resize(boardSize);
 
         for (int j = 0; j < boardSize; ++j) {
             board[i][j] = make_unique<NullPiece>(i, j, *this);
+            board[i][j]->attach(td);
         }
     }
     // Adds the black pieces
@@ -56,6 +57,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
     } else {
         board[newX][newY] = std::move(board[x][y]);
         board[x][y] = make_unique<NullPiece>(x, y, *this);
+        board[x][y]->attach(td);
     }
 
     return true;
@@ -69,11 +71,13 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
     if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
         return;
     }
-
+    board[x][y].reset();
     switch(piece) {
         case 'r':
+            board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
         case 'n':
+            board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
         case 'b':
             board[x][y] = make_unique<Bishop>(x, y, Colour::Black, *this);
@@ -82,12 +86,16 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
             board[x][y] = make_unique<Queen>(x, y, Colour::Black, *this);
             break;
         case 'k':
+            board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
         case 'p':
+            board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
         case 'R':
+            board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
         case 'N':
+            board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
         case 'B':
              board[x][y] = make_unique<Bishop>(x, y, Colour::White, *this);
@@ -96,12 +104,16 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
             board[x][y] = make_unique<Queen>(x, y, Colour::White, *this);
             break;
         case 'K':
+            board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
         case 'P':
+            board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
         default: 
+            board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
     }
+    board[x][y]->attach(td);
 }
 
 void Board::removePiece(int x, int y) {
@@ -119,4 +131,9 @@ Piece* Board::getPiece(int x, int y) const {
         return board[x][y].get();
     }
     return nullptr;
+}
+
+ostream &operator<<(ostream &out, const Board &b) {
+  out << *b.td;
+  return out;
 }

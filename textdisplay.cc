@@ -7,17 +7,20 @@ TextDisplay::TextDisplay(int n): gridSize{n} {
 	for (int r = 0; r < gridSize; ++r) {
 		theDisplay.emplace_back();
 		for (int c = 0; c < gridSize; ++c) {
-			theDisplay.at(r).emplace_back('_');
+			char spot = ((r + c) % 2 == 0) ? ' ' : '_';
+			theDisplay.at(r).emplace_back(spot);
 		}
   	}
 }
 
-void TextDisplay::notify(const Piece &p) {
+void TextDisplay::notify(const Piece &p, int oldX, int oldY) {
 	char c;
 	Type type = p.getType();
 	Colour colour = p.getColour();
 	int x = p.getX();
 	int y = p.getY();
+	theDisplay[oldX][oldY] = ((oldX + oldY) % 2 == 0) ? ' ' : '_';
+	
 	if (type == Type::Nullpiece) {
 		c = ((x + y) % 2 == 0) ? ' ' : '_';
 	}

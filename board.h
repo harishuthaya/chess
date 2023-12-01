@@ -8,6 +8,7 @@
 #include "queen.h"
 #include "nullPiece.h"
 #include "bishop.h"
+#include "textdisplay.h"
 
 class Piece;
 
@@ -17,8 +18,9 @@ class Board {
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
     WinState winState;
     const int boardSize = 8;
+    TextDisplay *td;
     public:
-        Board();
+        Board(TextDisplay *td);
         virtual ~Board() = default;
 
         bool moveSuccess(int x, int y, int newX, int newY);
@@ -27,6 +29,7 @@ class Board {
         void removePiece(int x, int y);
         int getSize() const;
         Piece* getPiece(int x, int y) const;
+        friend std::ostream &operator<<(std::ostream &out, const Board &b);
 };
 
 #endif
