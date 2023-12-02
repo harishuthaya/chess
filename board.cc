@@ -48,13 +48,24 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
     if (x == newX && y == newY) {
         return false;
     }
+
+    Colour playerColour = board[x][y]->getColour();
     
     MoveResult result = board[x][y]->moveSuccess(newX, newY);
     if (result == MoveResult::Failure) {
         return false;
     } else {
+        auto tempDest = std::move(board[newX][newY]);
         board[newX][newY] = std::move(board[x][y]);
         board[x][y] = make_unique<NullPiece>(x, y, *this);
+        if (isCheck(playerColour)) {
+            result = board[newX][newY]->moveSuccess(x, y);
+            board[x][y] = std::move(board[newX][newY]);
+            board[newX][newY] = std::move(tempDest);
+            cerr << "illegal move to put the king in check" << endl;
+            return false;
+        }
+
         board[x][y]->attach(td);
     }
 
