@@ -37,6 +37,7 @@ bool King::isValidMove(int newX, int newY) const {
     }
 
     if (board.isUnderAttack(newX, newY, getColour())) {
+        cerr << "illegal move to put the king in check" << endl;
         return false;
     }
 

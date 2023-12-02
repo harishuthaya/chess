@@ -58,16 +58,22 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
         auto tempDest = std::move(board[newX][newY]);
         board[newX][newY] = std::move(board[x][y]);
         board[x][y] = make_unique<NullPiece>(x, y, *this);
-        if (isCheck(playerColour)) {
-            result = board[newX][newY]->moveSuccess(x, y);
-            board[x][y] = std::move(board[newX][newY]);
-            board[newX][newY] = std::move(tempDest);
-            cerr << "illegal move to put the king in check" << endl;
-            return false;
-        }
+        // if (isCheck(playerColour)) {
+        //     result = board[newX][newY]->moveSuccess(x, y);
+        //     board[x][y] = std::move(board[newX][newY]);
+        //     board[newX][newY] = std::move(tempDest);
+        //     cerr << "illegal move to put the king in check" << endl;
+        //     return false;
+        // }
 
         board[x][y]->attach(td);
     }
+
+    // if (isCheckmate(Colour::White)) {
+    //     cout << "checkmate!";
+    // } else if (isCheck(Colour::White)) {
+    //     cout << "check";
+    // }
 
     return true;
 }

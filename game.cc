@@ -21,6 +21,11 @@ void Game::init() {
             cin >> a >> b >> d;
             chessboard->addPiece(c, a, b, d);
         }
+        else if (c == 'r') {
+            int x, y;
+            cin >> x >> y;
+            chessboard->removePiece(x, y);
+        }
         else
         {
             int a, b, c, d;
