@@ -135,7 +135,7 @@ bool Board::isUnderAttack(int x, int y, Colour playerColour) const {
     for (int i = 0; i < boardSize; ++i) {
         for (int j = 0; j < boardSize; ++j) {
             Piece* piece = getPiece(i, j);
-            if (piece && piece->getColour() != playerColour) {
+            if (!piece->isEmpty() && piece->getColour() != playerColour) {
                 // Check if the opponent's piece can legally move to the (x, y) position
                 if (piece->isValidMove(x, y)) {
                     return true;
@@ -145,6 +145,42 @@ bool Board::isUnderAttack(int x, int y, Colour playerColour) const {
     }
     return false;
 }
+
+bool Board::isCheck(Colour playerColour) const {
+    Piece* king = (playerColour == Colour::White) ? whiteKing : blackKing;
+    if (king) {
+        return isUnderAttack(king->getX(), king->getY(), playerColour);
+    }
+    return false;
+}
+
+bool Board::isCheckmate(Colour playerColour) const {
+    if (!isCheck(playerColour)) {
+        return false;
+    }
+
+    Piece* king = (playerColour == Colour::White) ? whiteKing : blackKing;
+    if (!king) {
+        return false;
+    }
+
+    for (int dx = -1; dx <= 1; ++dx) {
+        for (int dy = -1; dy <= 1; ++dy) {
+            if (dx == 0 && dy == 0) continue; // Skip the current position of the king
+
+            int newX = king->getX() + dx;
+            int newY = king->getY() + dy;
+
+            if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize && king->isValidMove(newX, newY)) {
+                return false;
+            }
+        }
+    }
+
+    // If all possible moves still result in check, then it's checkmate
+    return true;
+}
+
 
 Piece* Board::getPiece(int x, int y) const {
     if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {

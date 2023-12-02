@@ -34,6 +34,8 @@ class Board {
         void removePiece(int x, int y);
         int getSize() const;
         bool isUnderAttack(int x, int y, Colour playerColour) const;
+        bool isCheck(Colour playerColour) const;
+        bool isCheckmate(Colour playerColour) const;
         Piece* getPiece(int x, int y) const;
         friend std::ostream &operator<<(std::ostream &out, const Board &b);
 };
