@@ -22,11 +22,12 @@ class Game {
         void addPlayer(std::string player, Colour colour);
         void addPiece(char piece, std::string coords);
         void removePiece(std::string coords);
-        void move();
-        void resign();
+        void move(Colour curTurn);
+        void resign(Colour curTurn);
         bool verifySetup() const;
         Colour getTurn() const;
         void setTurn(std::string colour);
+        std::vector<int> getScores() const;
         friend std::ostream &operator<<(std::ostream &out, const Game &g);
 };
 

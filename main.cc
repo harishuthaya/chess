@@ -3,6 +3,7 @@
 #include "game.h"
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
 
 int main()
@@ -19,9 +20,9 @@ int main()
             cin >> p1 >> p2;
             game.init(p1, p2);
         } else if (cmd == "resign") {
-            game.resign();
+            game.resign(game.getTurn());
         } else if (cmd == "move") {
-            game.move();
+            game.move(game.getTurn());
         } else if (cmd == "setup") {
             while (true) {
                 cin >> cmd;
@@ -48,6 +49,11 @@ int main()
             }
         }
     }
+
+    vector<int> scores = game.getScores();
+    cout << "Final Score:" << endl;
+    cout << "White: " << scores[0] << endl;
+    cout << "Black: " << scores[1] << endl;
 }
 
 

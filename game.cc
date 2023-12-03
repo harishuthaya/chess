@@ -28,21 +28,30 @@ void Game::addPlayer(string player, Colour colour) {
   }
 }
 
-void Game::move() {
-    vector<string> move;
-    if (turn == Colour::White) {
-        move = players[0]->getMove();
-    } else if (turn == Colour::Black) {
-        move = players[1]->getMove();
+void Game::move(Colour curTurn) {
+    vector<string> move = players[0]->getMove();
+    vector<int> oldCoords = convertCoords(move[0]);
+    vector<int> newCoords = convertCoords(move[1]);
+    if (chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1])) {
+        if (curTurn == Colour::White) {
+            turn = Colour::Black;
+        } else {
+            turn = Colour::White;
+        }
     }
 }
 
-void Game::resign() {
+void Game::resign(Colour curTurn) {
+    if (curTurn == Colour::White) {
+        players[1]->incrementScore();
+    } else {
+        players[0]->incrementScore();
+    }
 
 }
 
-void Game::verifySetup() const {
-    return true;
+bool Game::verifySetup() const {
+    return this->chessboard->isOneKing() && this->chessboard->isPawnCorrect();
 }
 
 void Game::addPiece(char piece, string coords) {
@@ -69,6 +78,14 @@ void Game::setTurn(string colour) {
   } else if (colour == "black") {
     turn = Colour::Black;
   }
+}
+
+Colour Game::getTurn() const {
+    return this->turn;
+}
+
+vector<int> Game::getScores() const {
+    return vector<int>{players[0]->getScore(), players[1]->getScore()};
 }
 
 ostream &operator<<(ostream &out, const Game &g) {
