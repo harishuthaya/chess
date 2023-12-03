@@ -8,7 +8,7 @@
 class Board;
 
 enum class Colour { Black = 1, White, Green, Blue, NullColour };
-enum class MoveResult { Move, Capture, Failure, Replace, EnPassant };
+enum class MoveResult { Move, Capture, Failure, Castle, Replace, EnPassant };
 enum class Type { Queen, King, Bishop, Knight, Rook, Pawn, Nullpiece };
 
 class Piece {
@@ -18,6 +18,7 @@ class Piece {
     const Board& board;
     Type pieceType;
     std::vector<Observer*> observers;
+    bool hasMoved;
 
   public:
     Piece(int x, int y, Colour playerColour, const Board& board, Type pieceType);
@@ -31,6 +32,8 @@ class Piece {
     Type getType() const;
     void attach(Observer *o);
     void notifyObservers(int oldX, int oldY) const;
+    bool getHasMoved() const;
+    void setHasMoved(bool flag);
 
     // Virtual methods for move validation and success
     virtual MoveResult moveSuccess(int newX, int newY) = 0;

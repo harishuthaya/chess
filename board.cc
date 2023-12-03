@@ -59,6 +59,27 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     if (result == MoveResult::Failure) {
         return false;
     }
+
+    if (result == MoveResult::Castle) {
+        int rookY = (newY > y) ? boardSize - 1 : 0;
+        int rookNewY = (newY > y) ? newY - 1 : newY + 1;
+        board[x][rookNewY] = std::move(board[x][rookY]);
+        board[newX][newY] = std::move(board[x][y]);
+        board[x][y] = make_unique<NullPiece>(x, y, *this);
+        board[x][rookY] = make_unique<NullPiece>(x, rookY, *this);
+        if (isCheck(pieceColour)) {
+            cerr << "illegal move to castle - king must not be in check in final position" << endl;
+            board[x][y] = std::move(board[newX][newY]);
+            board[x][rookY] = std::move(board[x][rookNewY]);
+            board[x][y].get()->setHasMoved(false);
+            board[x][rookY].get()->setHasMoved(false);
+            board[x][y].get()->setPosition(x, y);
+            board[x][rookY]->setPosition(x, rookY);
+            return false;
+        }
+        return true;
+    }
+
     auto tempDest = std::move(board[newX][newY]);
     board[newX][newY] = std::move(board[x][y]);
     board[x][y] = make_unique<NullPiece>(x, y, *this);
@@ -84,7 +105,8 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
 
     if (isCheck(opponentColour)) {
-        cout << "check" << endl;
+        string s = (pieceColour == Colour::Black) ? "Black" : "White";
+        cout << s + " is in check." << endl;
     }
 
     // if (isCheckmate(Colour::White)) {

@@ -3,7 +3,7 @@
 using namespace std;
 
 Piece::Piece(int x, int y, Colour playerColour, const Board& board, Type pieceType) 
-    : x{x}, y{y}, playerColour{playerColour}, board{board}, pieceType{pieceType}, observers{} {}
+    : x{x}, y{y}, playerColour{playerColour}, board{board}, pieceType{pieceType}, observers{}, hasMoved{false} {}
 
 int Piece::getX() const {
     return x;
@@ -42,4 +42,12 @@ void Piece::notifyObservers(int oldX, int oldY) const {
     for (auto ob : observers) {
         ob->notify(*this, oldX, oldY);
     }
+}
+
+bool Piece::getHasMoved() const {
+    return this->hasMoved;
+}
+
+void Piece::setHasMoved(bool flag) {
+    hasMoved = flag;
 }
