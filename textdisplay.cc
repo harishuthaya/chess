@@ -26,23 +26,26 @@ void TextDisplay::notify(const Piece &p, int oldX, int oldY) {
 	}
 		else {
 			switch(type) {
-			case Type::Queen:
-				c = 'Q';
-				break;
-			case Type::King:
-				c = 'K';
-				break;
-			case Type::Bishop:
-				c = 'B';
-				break;
-			case Type::Knight:
-				c = 'N';
-				break;
-			case Type::Rook:
-				c = 'R';
-				break;
-			default: 
-				break;
+				case Type::Pawn:
+					c = 'P';
+					break;
+				case Type::Queen:
+					c = 'Q';
+					break;
+				case Type::King:
+					c = 'K';
+					break;
+				case Type::Bishop:
+					c = 'B';
+					break;
+				case Type::Knight:
+					c = 'N';
+					break;
+				case Type::Rook:
+					c = 'R';
+					break;
+				default: 
+					break;
 			}
 			if (colour == Colour::Black) {
 				c += 'a' - 'A'; // convert to lower case character.
@@ -54,11 +57,19 @@ void TextDisplay::notify(const Piece &p, int oldX, int oldY) {
 TextDisplay::~TextDisplay() {}
 
 ostream &operator<<(ostream &out, const TextDisplay &td) {
+	int rowCount = td.gridSize;
 	for (auto r : td.theDisplay) {
+		out << rowCount << " ";
+		--rowCount;
 		for (auto c : r) {
 			out << c;
 		}
     	out << endl;
   	}
+	out << endl << "  ";
+	for (char i = 'a'; i < 'a' + td.gridSize; ++i) {
+		out << i;
+	}
+	out << endl;
 	return out;
 }
