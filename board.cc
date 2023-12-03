@@ -79,7 +79,6 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         }
         return true;
     }
-
     auto tempDest = std::move(board[newX][newY]);
     board[newX][newY] = std::move(board[x][y]);
     board[x][y] = make_unique<NullPiece>(x, y, *this);
