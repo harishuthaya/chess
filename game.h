@@ -18,6 +18,7 @@ class Game {
 
     std::vector<int> convertCoords(std::string coords) const;
     public:
+        Game();
         void init(std::string p1, std::string p2);
         void addPlayer(std::string player, Colour colour);
         void addPiece(char piece, std::string coords);

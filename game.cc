@@ -8,6 +8,10 @@
 
 using namespace std;
 
+Game::Game(): turn{Colour::White} {
+
+}
+
 vector<int> Game::convertCoords(string coords) const {
     int row = chessboard->getSize() - (coords[1] - '0');
     int col = coords[0] - 'a';
@@ -33,6 +37,7 @@ void Game::move(Colour curTurn) {
     vector<int> oldCoords = convertCoords(move[0]);
     vector<int> newCoords = convertCoords(move[1]);
     if (chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn)) {
+        cout << "move succeeded" << endl;
         if (curTurn == Colour::White) {
             turn = Colour::Black;
         } else {
