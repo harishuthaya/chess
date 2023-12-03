@@ -47,7 +47,6 @@ int main()
             }
         }
     }
-<<<<<<< HEAD
 
     vector<int> scores = game.getScores();
     cout << "Final Score:" << endl;
@@ -114,47 +113,10 @@ int main()
 //             int a, b, c, d;
 //             cin >> a >> b >> c >> d;
 //             bool y = chessBoard.moveSuccess(a, b, c, d);
-=======
-}
-
-
-// void printBoard(Board &chessBoard)
-// {
-//     for (int i = 0; i < chessBoard.getSize(); i++)
-//     {
-//         for (int j = 0; j < chessBoard.getSize(); j++)
-//         {
-//             Piece *piece = chessBoard.getPiece(i, j);
-//             if (piece->getType() == Type::Nullpiece)
-//             {
-//                 cout << '_';
-//             }
-//             else
-//             {
-//                 if (piece->getColour() == Colour::Black)
-//                 {
-//                     if (piece->getType() == Type::Queen) {
-//                         cout << 'q';
-//                     } else if (piece->getType() == Type::Bishop) {
-//                         cout << 'b';
-//                     }
-//                 }
-//                 else
-//                 {
-//                     if (piece->getType() == Type::Queen) {
-//                         cout << 'Q';
-//                     } else if (piece->getType() == Type::Bishop) {
-//                         cout << 'B';
-//                     }
-//                 }
-//             }
->>>>>>> 86af6c76bc7f95c0dca8e853d34049d5194a71ed
 //         }
 //         cout << endl;
 //     }
 // }
-<<<<<<< HEAD
-=======
 
 // int main()
 // {   
@@ -185,4 +147,3 @@ int main()
 
 //     delete td;
 // }
->>>>>>> 86af6c76bc7f95c0dca8e853d34049d5194a71ed
