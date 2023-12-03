@@ -37,6 +37,8 @@ class Board {
         bool isCheck(Colour playerColour) const;
         bool isCheckmate(Colour playerColour) const;
         Piece* getPiece(int x, int y) const;
+        bool isOneKing() const;
+        bool isPawnCorrect() const;
         friend std::ostream &operator<<(std::ostream &out, const Board &b);
 };
 

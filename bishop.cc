@@ -46,7 +46,7 @@ bool Bishop::isValidMove(int newX, int newY) const {
 
     // Check if there is piece on end point or if it is opposite color piece
     Piece* destinationPiece = board.getPiece(newX, newY);
-    if (destinationPiece->isEmpty() || destinationPiece->getColour() != this->getColour()) {    
+    if (destinationPiece->isEmpty() || destinationPiece->getColour() != this->getColour()) {  
         return true;
     }
 

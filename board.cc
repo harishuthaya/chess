@@ -54,24 +54,31 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
     MoveResult result = board[x][y]->moveSuccess(newX, newY);
     if (result == MoveResult::Failure) {
         return false;
-    } else {
-        auto tempDest = std::move(board[newX][newY]);
-        board[newX][newY] = std::move(board[x][y]);
-        board[x][y] = make_unique<NullPiece>(x, y, *this);
-        // if (isCheck(playerColour)) {
-        //     result = board[newX][newY]->moveSuccess(x, y);
-        //     board[x][y] = std::move(board[newX][newY]);
-        //     board[newX][newY] = std::move(tempDest);
-        //     cerr << "illegal move to put the king in check" << endl;
-        //     return false;
-        // }
+    }
+    auto tempDest = std::move(board[newX][newY]);
+    board[newX][newY] = std::move(board[x][y]);
+    board[x][y] = make_unique<NullPiece>(x, y, *this);
+    if (isCheck(playerColour)) {
+        result = board[newX][newY]->moveSuccess(x, y);
+        board[x][y] = std::move(board[newX][newY]);
+        board[newX][newY] = std::move(tempDest);
+        cerr << "illegal move to put the king in check" << endl;
+        board[newX][newY]->attach(td);
+        return false;
+    }
 
-        board[x][y]->attach(td);
+    board[x][y]->attach(td);
+
+    Colour opponentColour = (playerColour == Colour::White) ? Colour::Black : Colour::White;
+
+    if (isCheck(opponentColour)) {
+        cout << "check" << endl;
     }
 
     // if (isCheckmate(Colour::White)) {
     //     cout << "checkmate!";
-    // } else if (isCheck(Colour::White)) {
+    // } 
+    // else if (isCheck(Colour::White)) {
     //     cout << "check";
     // }
 
@@ -153,9 +160,9 @@ bool Board::isUnderAttack(int x, int y, Colour playerColour) const {
         for (int j = 0; j < boardSize; ++j) {
             Piece* piece = getPiece(i, j);
             if (!piece->isEmpty() && piece->getColour() != playerColour) {
-                // Check if the opponent's piece can legally move to the (x, y) position
+                 // Check if the opponent's piece can legally move to the (x, y) position
                 if (piece->isValidMove(x, y)) {
-                    return true;
+                        return true;
                 }
             }
         }
@@ -204,6 +211,24 @@ Piece* Board::getPiece(int x, int y) const {
         return board[x][y].get();
     }
     return nullptr;
+}
+
+
+bool Board::isOneKing() const {
+    if (whiteKing && blackKing) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Board::isPawnCorrect() const {
+    for (int i = 0; i < boardSize; i++) {
+        if ((board[0][i].get()->getType() == Type::Pawn) || (board[boardSize - 1][i].get()->getType() == Type::Pawn)) {
+            return false;
+        }
+    }
+
 }
 
 ostream &operator<<(ostream &out, const Board &b) {
