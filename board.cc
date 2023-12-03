@@ -95,6 +95,11 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         // This needs to get input from user. 
         board[newX][newY].reset();
         board[newX][newY] = make_unique<Queen>(newX, newY, pieceColour, *this); 
+    } else if (result == MoveResult::EnPassant) {
+        int lastMoveX = lastMove->getX();
+        int lastMoveY = lastMove->getY();
+        board[lastMoveX][lastMoveY].reset();
+        board[lastMoveX][lastMoveY] = make_unique<NullPiece>(lastMoveX, lastMoveY, *this);
     }
 
     board[x][y]->attach(td);
