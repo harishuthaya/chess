@@ -7,8 +7,47 @@ using namespace std;
 
 int main()
 {
+    string cmd;
     Game game;
-    game.init();
+
+    while (true) {
+        cin >> cmd;
+        if (cin.eof()) break;
+
+        if (cmd == "game") {
+            string p1, p2;
+            cin >> p1 >> p2;
+            game.init(p1, p2);
+        } else if (cmd == "resign") {
+            game.resign();
+        } else if (cmd == "move") {
+            game.move();
+        } else if (cmd == "setup") {
+            while (true) {
+                cin >> cmd;
+                if (cmd == "+") {
+                    char piece;
+                    string coords;
+                    cin >> piece >> coords;
+                    game.addPiece(piece, coords);
+                    cout << game;
+                } else if (cmd == "-") {
+                    string coords;
+                    cin >> coords;
+                    game.removePiece(coords);
+                    cout << game;
+                } else if (cmd == "=") {
+                    string colour;
+                    cin >> colour;
+                    game.setTurn(colour);
+                } else if (cmd == "done") {
+                    if (game.verifySetup()) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 
