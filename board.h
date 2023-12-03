@@ -23,6 +23,9 @@ class Board {
     TextDisplay *td;
     Piece* whiteKing;
     Piece* blackKing;
+    Piece* lastMove;
+    int lastOldX;
+    int lastOldY;
 
     public:
         Board(TextDisplay *td);
@@ -37,6 +40,9 @@ class Board {
         bool isCheck(Colour playerColour) const;
         bool isCheckmate(Colour playerColour) const;
         Piece* getPiece(int x, int y) const;
+        Piece* getLastMove() const;
+        int getLastOldX() const;
+        int getLastOldY() const;
         bool isOneKing() const;
         bool isPawnCorrect() const;
         friend std::ostream &operator<<(std::ostream &out, const Board &b);

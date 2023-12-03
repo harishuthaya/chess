@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-Board::Board(TextDisplay *td): board{}, td{td} {
+Board::Board(TextDisplay *td): board{}, td{td}, lastMove{nullptr} {
     board.resize(boardSize);
     for (int i = 0; i < boardSize; ++i) {
         board[i].resize(boardSize);
@@ -49,9 +49,9 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         return false;
     }
 
-    Colour pieceColor = board[x][y]->getColour();
+    Colour pieceColour = board[x][y]->getColour();
 
-    if (pieceColor != playerColour) {
+    if (pieceColour != playerColour) {
         return false;
     }
     
@@ -62,7 +62,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     auto tempDest = std::move(board[newX][newY]);
     board[newX][newY] = std::move(board[x][y]);
     board[x][y] = make_unique<NullPiece>(x, y, *this);
-    if (isCheck(pieceColor)) {
+    if (isCheck(pieceColour)) {
         result = board[newX][newY]->moveSuccess(x, y);
         board[x][y] = std::move(board[newX][newY]);
         board[newX][newY] = std::move(tempDest);
@@ -70,10 +70,18 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         board[newX][newY]->attach(td);
         return false;
     }
+    if (result == MoveResult::Replace) {
+        // This needs to get input from user. 
+        board[newX][newY].reset();
+        board[newX][newY] = make_unique<Queen>(newX, newY, pieceColour, *this); 
+    }
 
     board[x][y]->attach(td);
+    lastMove = board[newX][newY].get();
+    lastOldX = x;
+    lastOldY = y;
 
-    Colour opponentColour = (pieceColor == Colour::White) ? Colour::Black : Colour::White;
+    Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
 
     if (isCheck(opponentColour)) {
         cout << "check" << endl;
@@ -217,6 +225,18 @@ Piece* Board::getPiece(int x, int y) const {
     return nullptr;
 }
 
+Piece* Board::getLastMove() const {
+    return lastMove;
+}
+
+int Board::getLastOldX() const {
+    return lastOldX;
+}
+
+int Board::getLastOldY() const {
+    return lastOldY;
+}
+
 
 bool Board::isOneKing() const {
     if (whiteKing && blackKing) {
@@ -232,6 +252,7 @@ bool Board::isPawnCorrect() const {
             return false;
         }
     }
+    return true;
 
 }
 
