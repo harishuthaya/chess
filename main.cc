@@ -17,6 +17,7 @@ int main()
             string p1, p2;
             cin >> p1 >> p2;
             game.init(p1, p2);
+            cout << game;
         } else if (cmd == "resign") {
             game.resign(game.getTurn());
         } else if (cmd == "move") {
