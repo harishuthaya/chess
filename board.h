@@ -28,7 +28,7 @@ class Board {
         Board(TextDisplay *td);
         virtual ~Board() = default;
 
-        bool moveSuccess(int x, int y, int newX, int newY);
+        bool moveSuccess(int x, int y, int newX, int newY, Colour playerColour);
         WinState getWinState();
         void addPiece(char piece, int x, int y, int playerID);
         void removePiece(int x, int y);
