@@ -22,6 +22,7 @@ int main()
             game.resign(game.getTurn());
         } else if (cmd == "move") {
             game.move(game.getTurn());
+            cout << game;
         } else if (cmd == "setup") {
             while (true) {
                 cin >> cmd;
