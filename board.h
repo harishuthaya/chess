@@ -11,6 +11,7 @@
 #include "textdisplay.h"
 #include "king.h"
 #include "rook.h"
+#include "pawn.h"
 
 class Piece;
 
