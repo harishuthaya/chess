@@ -148,6 +148,7 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
         case 'k':
             board[x][y] = make_unique<King>(x, y, Colour::Black, *this);
             blackKing = board[x][y].get();
+            blackKingNum++;
             break;
         case 'p':
             board[x][y] = make_unique<Pawn>(x, y, Colour::Black, *this);
@@ -167,6 +168,7 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
         case 'K':
             board[x][y] = make_unique<King>(x, y, Colour::White, *this);
             whiteKing = board[x][y].get();
+            whiteKingNum++;
             break;
         case 'P':
             board[x][y] = make_unique<Pawn>(x, y, Colour::White, *this);
@@ -182,8 +184,18 @@ void Board::removePiece(int x, int y) {
     if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
         return;
     }
+
+    Piece* piece = board[x][y].get();
+
+    if (piece->getType() == Type::King) {
+        if (piece->getColour() == Colour::White) {
+            whiteKingNum--;
+        } else {
+            blackKingNum--;
+        }
+    }
     
-    if (board[x][y].get()->getType() != Type::Nullpiece) {
+    if (piece->getType() != Type::Nullpiece) {
         board[x][y] = make_unique<NullPiece>(x, y, *this);
         board[x][y]->attach(td);
     }
@@ -265,9 +277,10 @@ int Board::getLastOldY() const {
 
 
 bool Board::isOneKing() const {
-    if (whiteKing && blackKing) {
+    if (whiteKingNum == 1 && blackKingNum == 1) {
         return true;
     } else {
+        cerr << "board must contain exactly one white king and one black king." << endl;
         return false;
     }
 }
@@ -275,6 +288,7 @@ bool Board::isOneKing() const {
 bool Board::isPawnCorrect() const {
     for (int i = 0; i < boardSize; i++) {
         if ((board[0][i].get()->getType() == Type::Pawn) || (board[boardSize - 1][i].get()->getType() == Type::Pawn)) {
+            cerr << "no pawns are allowed on the first and last row." << endl;
             return false;
         }
     }

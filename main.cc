@@ -47,6 +47,8 @@ int main()
                     }
                 }
             }
+        } else {
+            cerr << "Invalid command" << endl; 
         }
     }
 
