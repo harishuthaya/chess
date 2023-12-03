@@ -18,15 +18,9 @@ int main()
             cin >> p1 >> p2;
             game.init(p1, p2);
         } else if (cmd == "resign") {
-<<<<<<< HEAD
             game.resign(game.getTurn());
         } else if (cmd == "move") {
             game.move(game.getTurn());
-=======
-            game.resign();
-        } else if (cmd == "move") {
-            game.move();
->>>>>>> 86af6c76bc7f95c0dca8e853d34049d5194a71ed
         } else if (cmd == "setup") {
             while (true) {
                 cin >> cmd;
