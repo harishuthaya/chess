@@ -39,7 +39,7 @@ Board::Board(TextDisplay *td): board{}, td{td} {
     }
 }
 
-bool Board::moveSuccess(int x, int y, int newX, int newY) {
+bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     if (newX < 0 || newX >= boardSize || newY < 0 || newY >= boardSize ||
         x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
         return false;
@@ -49,7 +49,11 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
         return false;
     }
 
-    Colour playerColour = board[x][y]->getColour();
+    Colour pieceColor = board[x][y]->getColour();
+
+    if (pieceColor != playerColour) {
+        return false;
+    }
     
     MoveResult result = board[x][y]->moveSuccess(newX, newY);
     if (result == MoveResult::Failure) {
@@ -58,7 +62,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
     auto tempDest = std::move(board[newX][newY]);
     board[newX][newY] = std::move(board[x][y]);
     board[x][y] = make_unique<NullPiece>(x, y, *this);
-    if (isCheck(playerColour)) {
+    if (isCheck(pieceColor)) {
         result = board[newX][newY]->moveSuccess(x, y);
         board[x][y] = std::move(board[newX][newY]);
         board[newX][newY] = std::move(tempDest);
@@ -69,7 +73,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY) {
 
     board[x][y]->attach(td);
 
-    Colour opponentColour = (playerColour == Colour::White) ? Colour::Black : Colour::White;
+    Colour opponentColour = (pieceColor == Colour::White) ? Colour::Black : Colour::White;
 
     if (isCheck(opponentColour)) {
         cout << "check" << endl;
