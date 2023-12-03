@@ -90,8 +90,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         cerr << "illegal move to put the king in check" << endl;
         board[newX][newY]->attach(td);
         return false;
-    }
-    if (result == MoveResult::Replace) {
+    } else if (result == MoveResult::Replace) {
         // This needs to get input from user. 
         board[newX][newY].reset();
         board[newX][newY] = make_unique<Queen>(newX, newY, pieceColour, *this); 

@@ -5,7 +5,6 @@
 #include "board.h"
 
 class Pawn : public Piece {
-    bool hasMoved;
     public:
         Pawn(int x, int y, Colour playerColour, const Board& board);
 

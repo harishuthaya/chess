@@ -15,7 +15,7 @@ using namespace std;
 // Then we have en passant and replacing with rook, knight, bishop, or queen. 
 
 Pawn::Pawn(int x, int y, Colour playerColour, const Board& board) 
-    : Piece(x, y, playerColour, board, Type::Pawn), hasMoved{false} {}
+    : Piece(x, y, playerColour, board, Type::Pawn) {}
 
 MoveResult Pawn::moveSuccess(int newX, int newY) {
     if (!isValidMove(newX, newY)) {
@@ -24,14 +24,14 @@ MoveResult Pawn::moveSuccess(int newX, int newY) {
     Piece* targetPiece = board.getPiece(newX, newY);
     if (!targetPiece->isEmpty() && targetPiece->getColour() != this->getColour()) {
         setPosition(newX, newY);
-        hasMoved = true;
+        setHasMoved(true);
         // Make sure only works with correct side
-        return (newY == 0 || newY == board.getSize()) ? MoveResult::Replace : MoveResult::Move;
+        return (newY == 0 || newY == board.getSize() - 1) ? MoveResult::Replace : MoveResult::Move;
     }
 
     setPosition(newX, newY);
-    hasMoved = true;
-    if (newY == 0 || newY == board.getSize()) return MoveResult::Replace;
+    setHasMoved(true);
+    if (newY == 0 || newY == board.getSize() - 1) return MoveResult::Replace;
     else if (true) return MoveResult::EnPassant;
     else return MoveResult::Move;
 }
@@ -53,7 +53,7 @@ bool Pawn::isValidMove(int newX, int newY) const {
         // Need to check for enpassant here.
         // Need to check the old and new X and Y and the piecetype. 
         return true;
-    } else if (deltaX == 0 && deltaY == 2 && !hasMoved && destinationPiece->isEmpty()) {
+    } else if (deltaX == 0 && deltaY == 2 && !getHasMoved() && destinationPiece->isEmpty()) {
         Piece* inBetween = board.getPiece(x, y + direction);
         return inBetween->isEmpty();
         // This is a move forward by 2 attempt
