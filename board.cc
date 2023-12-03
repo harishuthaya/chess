@@ -21,7 +21,7 @@ Board::Board(TextDisplay *td): board{}, td{td}, lastMove{nullptr} {
     this->addPiece('b', 0, 5, 1);
     this->addPiece('n', 0, 6, 1);
     this->addPiece('r', 0, 7, 1);
-    for (int i = 0; i < boardSize - 1; ++i) {
+    for (int i = 0; i < boardSize; ++i) {
         this->addPiece('p', 1, i, 1);
     }
 
@@ -34,7 +34,7 @@ Board::Board(TextDisplay *td): board{}, td{td}, lastMove{nullptr} {
     this->addPiece('B', boardSize - 1, 5, 2);
     this->addPiece('N', boardSize - 1, 6, 2);
     this->addPiece('R', boardSize - 1, 7, 2);
-    for (int i = 0; i < boardSize - 1; ++i) {
+    for (int i = 0; i < boardSize; ++i) {
         this->addPiece('P', boardSize - 2, i, 2);
     }
 }
