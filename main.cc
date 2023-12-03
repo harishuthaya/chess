@@ -18,9 +18,15 @@ int main()
             cin >> p1 >> p2;
             game.init(p1, p2);
         } else if (cmd == "resign") {
+<<<<<<< HEAD
             game.resign(game.getTurn());
         } else if (cmd == "move") {
             game.move(game.getTurn());
+=======
+            game.resign();
+        } else if (cmd == "move") {
+            game.move();
+>>>>>>> 86af6c76bc7f95c0dca8e853d34049d5194a71ed
         } else if (cmd == "setup") {
             while (true) {
                 cin >> cmd;
@@ -47,6 +53,7 @@ int main()
             }
         }
     }
+<<<<<<< HEAD
 
     vector<int> scores = game.getScores();
     cout << "Final Score:" << endl;
@@ -113,6 +120,75 @@ int main()
 //             int a, b, c, d;
 //             cin >> a >> b >> c >> d;
 //             bool y = chessBoard.moveSuccess(a, b, c, d);
+=======
+}
+
+
+// void printBoard(Board &chessBoard)
+// {
+//     for (int i = 0; i < chessBoard.getSize(); i++)
+//     {
+//         for (int j = 0; j < chessBoard.getSize(); j++)
+//         {
+//             Piece *piece = chessBoard.getPiece(i, j);
+//             if (piece->getType() == Type::Nullpiece)
+//             {
+//                 cout << '_';
+//             }
+//             else
+//             {
+//                 if (piece->getColour() == Colour::Black)
+//                 {
+//                     if (piece->getType() == Type::Queen) {
+//                         cout << 'q';
+//                     } else if (piece->getType() == Type::Bishop) {
+//                         cout << 'b';
+//                     }
+//                 }
+//                 else
+//                 {
+//                     if (piece->getType() == Type::Queen) {
+//                         cout << 'Q';
+//                     } else if (piece->getType() == Type::Bishop) {
+//                         cout << 'B';
+//                     }
+//                 }
+//             }
+>>>>>>> 86af6c76bc7f95c0dca8e853d34049d5194a71ed
 //         }
+//         cout << endl;
 //     }
 // }
+<<<<<<< HEAD
+=======
+
+// int main()
+// {   
+//     TextDisplay* td = new TextDisplay(8);
+//     Board chessBoard(td);
+//     char c;
+//     while (cin >> c)
+//     {
+//         if (c == 'p')
+//         {
+//             printBoard(chessBoard);
+//         }
+//         else if (c == 'a')
+//         {
+//             char c;
+//             cin >> c;
+//             int a, b, d;
+//             cin >> a >> b >> d;
+//             chessBoard.addPiece(c, a, b, d);
+//         }
+//         else
+//         {
+//             int a, b, c, d;
+//             cin >> a >> b >> c >> d;
+//             bool y = chessBoard.moveSuccess(a, b, c, d);
+//         }
+//     }
+
+//     delete td;
+// }
+>>>>>>> 86af6c76bc7f95c0dca8e853d34049d5194a71ed
