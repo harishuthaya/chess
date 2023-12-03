@@ -151,7 +151,7 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
             blackKing = board[x][y].get();
             break;
         case 'p':
-            board[x][y] = make_unique<NullPiece>(x, y, *this);
+            board[x][y] = make_unique<Pawn>(x, y, Colour::Black, *this);
             break;
         case 'R':
             board[x][y] = make_unique<Rook>(x, y, Colour::White, *this);
@@ -170,7 +170,7 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
             whiteKing = board[x][y].get();
             break;
         case 'P':
-            board[x][y] = make_unique<NullPiece>(x, y, *this);
+            board[x][y] = make_unique<Pawn>(x, y, Colour::White, *this);
             break;
         default: 
             board[x][y] = make_unique<NullPiece>(x, y, *this);
