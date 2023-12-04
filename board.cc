@@ -107,7 +107,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         return false;
     }
 
-    if (lastMove) {
+    if (lastMoveResult != MoveResult::Failure) {
         movesHistory.push(Move(lastOldX, lastOldY, lastMove, lastMoveResult, lastMoveHasMoveState, lastCapturedHasMoveState, std::move(lastCaptured)));
     }
     
@@ -115,6 +115,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     lastCapturedHasMoveState = board[newX][newY].get()->getHasMoved();
     MoveResult result = board[x][y]->moveSuccess(newX, newY);        
     if (result == MoveResult::Failure) {
+        lastMoveResult = result;
         return false;
     }
 
@@ -554,6 +555,18 @@ bool Board::undoMove() {
             movesHistory.pop();
         }
         return true;
+    } else {
+        if (!movesHistory.empty()) {
+            lastOldX = movesHistory.top().lastOldX;
+            lastOldY = movesHistory.top().lastOldY;
+            lastMove = movesHistory.top().lastMove;
+            lastCapturedHasMoveState = movesHistory.top().lastCapturedHasMoveState;
+            lastMoveHasMoveState = movesHistory.top().lastMoveHasMoveState;
+            lastMoveResult = movesHistory.top().moveResult;
+            lastCaptured = std::move(movesHistory.top().lastCaptured);
+            movesHistory.pop();
+        }
+        undoMove();
     }
 
     return false;
