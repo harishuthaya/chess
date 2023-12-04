@@ -27,6 +27,8 @@ class Board {
     Piece* lastMove;
     int lastOldX;
     int lastOldY;
+    int whiteKingNum = 0;
+    int blackKingNum = 0;
 
     public:
         Board(TextDisplay *td);
