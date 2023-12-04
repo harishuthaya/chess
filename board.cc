@@ -39,6 +39,44 @@ Board::Board(TextDisplay *td): board{}, td{td}, lastMove{nullptr} {
     }
 }
 
+bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, char c) {
+    if (c == 'k' || c == 'K') {
+        cerr << "Pawn promotion is king is illegal" << endl;
+        return false;
+    }
+    Colour pieceColor = board[x][y]->getColour();
+
+    bool success = moveSuccess(x, y, newX, newY, playerColour);
+    if (!success) {
+        return false;
+    }
+
+    lastMove = board[newX][newY].get();
+    lastOldX = x;
+    lastOldY = y;
+
+    if (board[newX][newY].get()->getType() == Type::Pawn) {
+        int playerId = (pieceColor == Colour::Black) ? 2 : 1;
+        this->addPiece(c, newX, newY, playerId);
+    }
+
+    Colour opponentColour = (pieceColor == Colour::White) ? Colour::Black : Colour::White;
+
+    if (isCheck(opponentColour)) {
+        string s = (pieceColor == Colour::Black) ? "Black" : "White";
+        cout << s + " is in check." << endl;
+    }
+    if (isCheckmate(Colour::White)) {
+        cout << "checkmate!";
+    } 
+    else if (isCheck(Colour::White)) {
+        cout << "check";
+    }
+
+    return true;
+}
+
+
 bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     if (newX < 0 || newX >= boardSize || newY < 0 || newY >= boardSize ||
         x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
@@ -68,7 +106,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         board[x][y] = make_unique<NullPiece>(x, y, *this);
         board[x][rookY] = make_unique<NullPiece>(x, rookY, *this);
         if (isCheck(pieceColour)) {
-            cerr << "illegal move to castle - king must not be in check in final position" << endl;
+            cerr << "can't castle" << endl;
             board[x][y] = std::move(board[newX][newY]);
             board[x][rookY] = std::move(board[x][rookNewY]);
             board[x][y].get()->setHasMoved(false);
@@ -77,8 +115,36 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
             board[x][rookY]->setPosition(x, rookY);
             return false;
         }
+        lastMove = board[newX][newY].get();
+        lastOldX = x;
+        lastOldY = y;
         return true;
     }
+
+    if (result == MoveResult::EnPassant) {
+        int capturedPawnX = x;
+        int capturedPawnY = newY;
+        cout << capturedPawnX << capturedPawnY;
+        auto tempDest = std::move(board[capturedPawnX][capturedPawnY]);
+        board[capturedPawnX][capturedPawnY] = make_unique<NullPiece>(capturedPawnX, capturedPawnY, *this);
+        board[newX][newY] = std::move(board[x][y]);
+        board[x][y] = make_unique<NullPiece>(x, y, *this);
+        if (isCheck(pieceColour)) {
+            board[x][y] = std::move(board[newX][newY]);
+            board[x][y].get()->setPosition(x, y);
+            board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
+            board[capturedPawnX][capturedPawnY] = std::move(tempDest);
+            board[newX][newY]->attach(td);
+            board[capturedPawnX][capturedPawnY]->attach(td);
+            cerr << "illegal move to put the king in check" << endl;
+            return false;
+        }
+
+        board[capturedPawnX][capturedPawnY]->attach(td);
+        board[x][y]->attach(td);
+        return true;
+    }
+
     auto tempDest = std::move(board[newX][newY]);
     board[newX][newY] = std::move(board[x][y]);
     board[x][y] = make_unique<NullPiece>(x, y, *this);
@@ -89,17 +155,8 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         cerr << "illegal move to put the king in check" << endl;
         board[newX][newY]->attach(td);
         return false;
-    } else if (result == MoveResult::Replace) {
-        // This needs to get input from user. 
-        board[newX][newY].reset();
-        board[newX][newY] = make_unique<Queen>(newX, newY, pieceColour, *this); 
-    } else if (result == MoveResult::EnPassant) {
-        int lastMoveX = lastMove->getX();
-        int lastMoveY = lastMove->getY();
-        board[lastMoveX][lastMoveY].reset();
-        board[lastMoveX][lastMoveY] = make_unique<NullPiece>(lastMoveX, lastMoveY, *this);
     }
-
+    
     board[x][y]->attach(td);
     lastMove = board[newX][newY].get();
     lastOldX = x;

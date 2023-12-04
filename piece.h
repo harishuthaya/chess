@@ -8,7 +8,7 @@
 class Board;
 
 enum class Colour { Black = 1, White, Green, Blue, NullColour };
-enum class MoveResult { Move, Capture, Failure, Castle, Replace, EnPassant };
+enum class MoveResult { Move, Capture, Failure, Castle, EnPassant };
 enum class Type { Queen, King, Bishop, Knight, Rook, Pawn, Nullpiece };
 
 class Piece {
