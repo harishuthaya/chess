@@ -346,7 +346,23 @@ bool Board::isCheckmate(Colour playerColour) {
 }
 
 bool Board::isStalemate(Colour playerColour) {
-    return false;
+    for (int x = 0; x < boardSize; x++) {
+        for (int y = 0; y < boardSize; y++) {
+            Piece* piece = getPiece(x, y);
+            if (piece && piece->getColour() == playerColour) {
+                for (int newX = 0; newX < boardSize; newX++) {
+                    for (int newY = 0; newY < boardSize; newY++) {
+                        if (stimulateMove(x, y, newX, newY, playerColour)) {
+                            undoMove();
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
 }
 
 
