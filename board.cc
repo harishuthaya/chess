@@ -74,7 +74,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
     Colour opponentColour = (pieceColor == Colour::White) ? Colour::Black : Colour::White;
 
     if (isCheck(opponentColour)) {
-        string s = (pieceColor == Colour::Black) ? "Black" : "White";
+        string s = (opponentColour == Colour::Black) ? "Black" : "White";
         cout << s + " is in check." << endl;
     }
     if (isCheckmate(Colour::White)) {
@@ -175,9 +175,10 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
 
     if (isCheck(opponentColour)) {
-        string s = (pieceColour == Colour::Black) ? "Black" : "White";
+        string s = (opponentColour == Colour::Black) ? "Black" : "White";
         cout << s + " is in check." << endl;
-    } else if(isCheckmate(Colour::White)) {
+    } 
+    if(isCheckmate(Colour::White)) {
         cout << "Checkmate! Black wins!" << endl;
         winState = WinState::Player2Win;
     } else if (isCheckmate(Colour::Black)) {
