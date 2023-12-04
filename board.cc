@@ -159,7 +159,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     board[newX][newY] = std::move(board[x][y]);
     board[x][y] = make_unique<NullPiece>(x, y, *this);
     if (isCheck(pieceColour)) {
-        result = board[newX][newY]->moveSuccess(x, y);
+        board[newX][newY]->setPosition(x, y);
         board[x][y] = std::move(board[newX][newY]);
         board[newX][newY] = std::move(tempDest);
         cerr << "illegal move to put the king in check" << endl;
