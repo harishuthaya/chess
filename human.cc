@@ -14,3 +14,9 @@ vector<string> Human::getMove() const {
     cin >> moves[0] >> moves[1];
     return moves;
 }
+
+char Human::getPromotion() const {
+    char c;
+    cin >> c;
+    return c;
+}
