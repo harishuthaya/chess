@@ -9,6 +9,7 @@
 #include "nullPiece.h"
 #include "bishop.h"
 #include "textdisplay.h"
+#include "graphicsdisplay.h"
 #include "king.h"
 #include "rook.h"
 #include "pawn.h"
@@ -22,6 +23,7 @@ class Board {
     WinState winState;
     const int boardSize = 8;
     TextDisplay *td;
+    GraphicsDisplay *gd;
     Piece* whiteKing;
     Piece* blackKing;
     Piece* lastMove;
@@ -31,7 +33,7 @@ class Board {
     int blackKingNum = 0;
 
     public:
-        Board(TextDisplay *td);
+        Board(TextDisplay *td, GraphicsDisplay *gd);
         virtual ~Board() = default;
 
         bool moveSuccess(int x, int y, int newX, int newY, Colour playerColour);

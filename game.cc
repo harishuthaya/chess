@@ -8,7 +8,7 @@
 
 using namespace std;
 
-Game::Game(): turn{Colour::White}, gameActive{false} {
+Game::Game(Xwindow &xw): turn{Colour::White}, gameActive{false}, xw{xw} {
 
 }
 
@@ -101,7 +101,8 @@ void Game::init(string p1, string p2) {
   this->addPlayer(p2, Colour::Black);
   
   td = make_unique<TextDisplay>(8);
-  chessboard = make_unique<Board>(td.get());
+  gd = make_unique<GraphicsDisplay>(9, xw);
+  chessboard = make_unique<Board>(td.get(), gd.get());
   gameActive = true;
 }
 

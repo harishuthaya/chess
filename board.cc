@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-Board::Board(TextDisplay *td): board{}, winState{WinState::InProgress}, td{td}, lastMove{nullptr} {
+Board::Board(TextDisplay *td, GraphicsDisplay *gd): board{}, winState{WinState::InProgress}, td{td}, gd{gd}, lastMove{nullptr} {
     board.resize(boardSize);
     for (int i = 0; i < boardSize; ++i) {
         board[i].resize(boardSize);
@@ -10,6 +10,7 @@ Board::Board(TextDisplay *td): board{}, winState{WinState::InProgress}, td{td}, 
         for (int j = 0; j < boardSize; ++j) {
             board[i][j] = make_unique<NullPiece>(i, j, *this);
             board[i][j]->attach(td);
+            board[i][j]->attach(gd);
         }
     }
     // Adds the black pieces
@@ -145,13 +146,17 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
             board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
             board[capturedPawnX][capturedPawnY] = std::move(tempDest);
             board[newX][newY]->attach(td);
+            board[newX][newY]->attach(gd);
             board[capturedPawnX][capturedPawnY]->attach(td);
+            board[capturedPawnX][capturedPawnY]->attach(gd);
             cerr << "illegal move to put the king in check" << endl;
             return false;
         }
 
         board[capturedPawnX][capturedPawnY]->attach(td);
+        board[capturedPawnX][capturedPawnY]->attach(gd);
         board[x][y]->attach(td);
+        board[x][y]->attach(gd);
         return true;
     }
 
@@ -164,10 +169,12 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         board[newX][newY] = std::move(tempDest);
         cerr << "illegal move to put the king in check" << endl;
         board[newX][newY]->attach(td);
+        board[newX][newY]->attach(gd);
         return false;
     }
     
     board[x][y]->attach(td);
+    board[x][y]->attach(gd);
     lastMove = board[newX][newY].get();
     lastOldX = x;
     lastOldY = y;
@@ -247,6 +254,7 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
             break;
     }
     board[x][y]->attach(td);
+    board[x][y]->attach(gd);
 }
 
 void Board::removePiece(int x, int y) {
@@ -267,6 +275,7 @@ void Board::removePiece(int x, int y) {
     if (piece->getType() != Type::Nullpiece) {
         board[x][y] = make_unique<NullPiece>(x, y, *this);
         board[x][y]->attach(td);
+        board[x][y]->attach(gd);
     }
 }
 
@@ -343,12 +352,14 @@ bool Board::isCheckmate(Colour playerColour) {
                         board[x][y] = std::move(board[i2][j2]);
                         board[i2][j2] = std::move(tempDest);
                         board[i2][j2]->attach(td);
+                        board[i2][j2]->attach(gd);
                     } else {
                         // If it makes the king no longer in check, not a checkmate
                         board[i2][j2]->moveSuccess(x, y);
                         board[x][y] = std::move(board[i2][j2]);
                         board[i2][j2] = std::move(tempDest);
                         board[i2][j2]->attach(td);
+                        board[i2][j2]->attach(gd);
                         return false;
                     }
                 }
