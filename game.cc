@@ -107,6 +107,7 @@ void Game::undo() {
 
 void Game::setUp() {
   td = make_unique<TextDisplay>(8);
+  gd = make_unique<GraphicsDisplay>(9, xw);
   chessboard = make_unique<Board>(td.get(), gd.get());
   setupUsed = true;
 }
