@@ -35,7 +35,7 @@ class Board {
         virtual ~Board() = default;
 
         bool moveSuccess(int x, int y, int newX, int newY, Colour playerColour);
-        bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, char c);
+        bool moveSuccess(int x, int y, int newX, int newY, Colour playerColour, char c);
         WinState getWinState();
         void addPiece(char piece, int x, int y, int playerID);
         void removePiece(int x, int y);

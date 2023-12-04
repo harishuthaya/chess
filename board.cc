@@ -44,6 +44,17 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
         cerr << "Pawn promotion is king is illegal" << endl;
         return false;
     }
+
+    if (playerColour == Colour::White && (c != 'Q' && c != 'B' && c != 'N' && c != 'R')) {
+        cerr << "Invalid promotion" << endl;
+        return false;
+    }
+
+    if (playerColour == Colour::Black && (c != 'q' && c != 'b' && c != 'n' && c != 'r')) {
+        cerr << "Invalid promotion" << endl;
+        return false;
+    }
+
     Colour pieceColor = board[x][y]->getColour();
 
     bool success = moveSuccess(x, y, newX, newY, playerColour);
@@ -169,12 +180,12 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         cout << s + " is in check." << endl;
     }
 
-    if (isCheckmate(Colour::White)) {
-        cout << "checkmate!";
-    } 
-    else if (isCheck(Colour::White)) {
-        cout << "check";
-    }
+    // if (isCheckmate(Colour::White)) {
+    //     cout << "checkmate!";
+    // } 
+    // else if (isCheck(Colour::White)) {
+    //     cout << "check";
+    // }
 
     return true;
 }
