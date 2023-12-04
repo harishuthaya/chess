@@ -105,6 +105,7 @@ void Game::undo() {
 void Game::setUp() {
   td = make_unique<TextDisplay>(8);
   chessboard = make_unique<Board>(td.get(), gd.get());
+  gd = make_unique<GraphicsDisplay>(9, xw);
 }
 
 void Game::removePiece(string coords) {
