@@ -87,7 +87,7 @@ void Game::resign(Colour curTurn) {
 }
 
 bool Game::verifySetup() const {
-    return this->chessboard->isOneKing() && this->chessboard->isPawnCorrect();
+    return this->chessboard->isOneKing() && this->chessboard->isPawnCorrect() && !this->chessboard->isCheck(Colour::White) && !this->chessboard->isCheck(Colour::Black);
 }
 
 void Game::addPiece(char piece, string coords) {
