@@ -112,12 +112,12 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         cout << s + " is in check." << endl;
     }
 
-    // if (isCheckmate(Colour::White)) {
-    //     cout << "checkmate!";
-    // } 
-    // else if (isCheck(Colour::White)) {
-    //     cout << "check";
-    // }
+    if (isCheckmate(Colour::White)) {
+        cout << "checkmate!";
+    } 
+    else if (isCheck(Colour::White)) {
+        cout << "check";
+    }
 
     return true;
 }
@@ -237,6 +237,7 @@ bool Board::isCheckmate(Colour playerColour) {
         return false;
     }
 
+    // Check if the king is able to move
     for (int dx = -1; dx <= 1; ++dx) {
         for (int dy = -1; dy <= 1; ++dy) {
             if (dx == 0 && dy == 0) continue; // Skip the current position of the king
@@ -250,25 +251,30 @@ bool Board::isCheckmate(Colour playerColour) {
         }
     }
 
+    // Loop over every piece
     for (int i = 0; i < boardSize; ++i) {
         for (int j = 0; j < boardSize; ++j) {
             Piece* piece = getPiece(i, j);
             if (piece->getColour() != playerColour) continue;
 
+            // Loop over every possible move it can make
             for (int i2 = 0; i2 < boardSize; ++i2) {
                 for (int j2 = 0; j2 < boardSize; ++j2) {
+                    if (piece->getX() == i2 && piece->getY() == j2) continue;
+
+                    // Simulate the move and check if it keeps the king in check
                     int x = piece->getX();
                     int y = piece->getY();
                     auto tempDest = std::move(board[i2][j2]);
                     board[i2][j2] = std::move(board[x][y]);
                     board[x][y] = make_unique<NullPiece>(x, y, *this);
-
                     if (isCheck(playerColour)) {
                         board[i2][j2]->moveSuccess(x, y);
                         board[x][y] = std::move(board[i2][j2]);
                         board[i2][j2] = std::move(tempDest);
                         board[i2][j2]->attach(td);
                     } else {
+                        // If it makes the king no longer in check, not a checkmate
                         board[i2][j2]->moveSuccess(x, y);
                         board[x][y] = std::move(board[i2][j2]);
                         board[i2][j2] = std::move(tempDest);
@@ -281,6 +287,29 @@ bool Board::isCheckmate(Colour playerColour) {
     }
 
     // If all possible moves still result in check, then it's checkmate
+    return true;
+}
+
+bool Board::isStalemate(Colour playerColour) {
+    for (int i = 0; i < boardSize; ++i) {
+        for (int j = 0; j < boardSize; ++j) {
+            Piece* piece = getPiece(i, j);
+            if (piece->getColour() != playerColour) continue;
+
+            // Loop over every possible move it can make
+            for (int i2 = 0; i2 < boardSize; ++i2) {
+                for (int j2 = 0; j2 < boardSize; ++j2) {
+                    if (piece->getX() == i2 && piece->getY() == j2) continue;
+
+                    // See if the move is valid
+                    if (piece->isValidMove(i2, j2)) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
     return true;
 }
 
