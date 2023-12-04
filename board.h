@@ -10,6 +10,7 @@
 #include "nullPiece.h"
 #include "bishop.h"
 #include "textdisplay.h"
+#include "graphicsdisplay.h"
 #include "king.h"
 #include "rook.h"
 #include "pawn.h"
@@ -40,6 +41,7 @@ class Board {
     WinState winState;
     const int boardSize = 8;
     TextDisplay *td;
+    GraphicsDisplay *gd;
     Piece* whiteKing;
     Piece* blackKing;
     Piece* lastMove;
@@ -54,7 +56,7 @@ class Board {
     std::stack<Move> movesHistory;
 
     public:
-        Board(TextDisplay *td);
+        Board(TextDisplay *td, GraphicsDisplay *gd);
         void clear();
         void init();
         virtual ~Board() = default;
