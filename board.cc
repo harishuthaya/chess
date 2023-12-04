@@ -46,12 +46,12 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
     }
 
     if (playerColour == Colour::White && (c != 'Q' && c != 'B' && c != 'N' && c != 'R')) {
-        cerr << "Invalid promotion" << endl;
+        cerr << "Invalid promotion - Pawn must be promoted to a White Piece" << endl;
         return false;
     }
 
     if (playerColour == Colour::Black && (c != 'q' && c != 'b' && c != 'n' && c != 'r')) {
-        cerr << "Invalid promotion" << endl;
+        cerr << "Invalid promotion - Pawn must be promoted to a Black Piece" << endl;
         return false;
     }
 
