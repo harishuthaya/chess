@@ -10,11 +10,14 @@
 #include "player.h"
 #include "piece.h"
 
+enum class GameState { NoGame, GameRunning, Player1Win, Player2Win, Tie };
+
 class Game {
     std::unique_ptr<TextDisplay> td;
     std::unique_ptr<Board> chessboard;
     std::vector<std::unique_ptr<Player>> players;
     Colour turn;
+    bool gameActive;
 
     std::vector<int> convertCoords(std::string coords) const;
     public:
@@ -29,6 +32,7 @@ class Game {
         Colour getTurn() const;
         void setTurn(std::string colour);
         std::vector<int> getScores() const;
+        bool isGameActive() const;
         friend std::ostream &operator<<(std::ostream &out, const Game &g);
 };
 

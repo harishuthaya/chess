@@ -8,7 +8,7 @@
 
 using namespace std;
 
-Game::Game(): turn{Colour::White} {
+Game::Game(): turn{Colour::White}, gameActive{false} {
 
 }
 
@@ -43,14 +43,31 @@ void Game::move(Colour curTurn) {
             turn = Colour::White;
         }
     }
+    WinState currentState = chessboard->getWinState();
+    if (currentState == WinState::Player1Win) {
+      players.at(0)->incrementScore(1);
+      gameActive = false;
+    }
+    else if (currentState == WinState::Player2Win) {
+      players.at(1)->incrementScore(1);
+      gameActive = false;
+    }
+    else if (currentState == WinState::Tie) {
+      players.at(0)->incrementScore(0.5);
+      players.at(1)->incrementScore(0.5);
+      gameActive = false;
+    }
 }
 
 void Game::resign(Colour curTurn) {
     if (curTurn == Colour::White) {
-        players[1]->incrementScore();
+        players[1]->incrementScore(1);
+        cout << "Black wins!" << endl;
     } else {
-        players[0]->incrementScore();
+        players[0]->incrementScore(1);
+        cout << "White wins!" << endl;
     }
+    gameActive = false;
 
 }
 
@@ -74,6 +91,7 @@ void Game::init(string p1, string p2) {
   
   td = make_unique<TextDisplay>(8);
   chessboard = make_unique<Board>(td.get());
+  gameActive = true;
 }
 
 void Game::setTurn(string colour) {
@@ -93,6 +111,10 @@ vector<int> Game::getScores() const {
       return vector<int>{0, 0};
     }
     return vector<int>{players[0]->getScore(), players[1]->getScore()};
+}
+
+bool Game::isGameActive() const {
+  return gameActive;
 }
 
 ostream &operator<<(ostream &out, const Game &g) {

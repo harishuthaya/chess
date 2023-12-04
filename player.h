@@ -7,14 +7,14 @@
 
 class Player {
     Colour colour;
-    int score;
+    float score;
 
     public:
         Player(Colour colour);
         virtual ~Player() = default;
         virtual std::vector<std::string> getMove() const = 0;
         int getScore() const;
-        void incrementScore();
+        void incrementScore(float i);
 };
 
 #endif

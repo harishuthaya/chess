@@ -13,17 +13,17 @@ int main()
         cin >> cmd;
         if (cin.eof()) break;
 
-        if (cmd == "game") {
+        if (cmd == "game" && !game.isGameActive()) {
             string p1, p2;
             cin >> p1 >> p2;
             game.init(p1, p2);
             cout << game;
-        } else if (cmd == "resign") {
+        } else if (cmd == "resign" && game.isGameActive()) {
             game.resign(game.getTurn());
-        } else if (cmd == "move") {
+        } else if (cmd == "move" && game.isGameActive()) {
             game.move(game.getTurn());
             cout << game;
-        } else if (cmd == "setup") {
+        } else if (cmd == "setup" && !game.isGameActive()) {
             while (true) {
                 cin >> cmd;
                 if (cmd == "+") {

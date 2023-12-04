@@ -9,6 +9,6 @@ int Player::getScore() const {
     return score;
 }
 
-void Player::incrementScore() {
-    ++score;
+void Player::incrementScore(float i) {
+    score += i;
 }

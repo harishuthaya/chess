@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-Board::Board(TextDisplay *td): board{}, td{td}, lastMove{nullptr} {
+Board::Board(TextDisplay *td): board{}, winState{WinState::InProgress}, td{td}, lastMove{nullptr} {
     board.resize(boardSize);
     for (int i = 0; i < boardSize; ++i) {
         board[i].resize(boardSize);
@@ -178,14 +178,16 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     if (isCheck(opponentColour)) {
         string s = (pieceColour == Colour::Black) ? "Black" : "White";
         cout << s + " is in check." << endl;
-    }
-
-    // if (isCheckmate(Colour::White)) {
-    //     cout << "checkmate!";
-    // } 
-    // else if (isCheck(Colour::White)) {
-    //     cout << "check";
-    // }
+    } else if(isCheckmate(Colour::White)) {
+        cout << "Checkmate! Black wins!" << endl;
+        winState = WinState::Player2Win;
+    } else if (isCheckmate(Colour::Black)) {
+        cout << "Checkmate! White wins!" << endl;
+        winState = WinState::Player1Win;
+    } else if (isStalemate(Colour::White) || isStalemate(Colour::Black)) {
+        cout << "Stalemate!" << endl;
+        winState = WinState::Tie;
+    } 
 
     return true;
 }

@@ -15,7 +15,7 @@
 
 class Piece;
 
-enum class WinState { Win, Lose, Tie };
+enum class WinState { Player1Win, Player2Win, Tie, InProgress };
 
 class Board {
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
