@@ -34,6 +34,8 @@ class Game {
         std::vector<int> getScores() const;
         bool isGameActive() const;
         friend std::ostream &operator<<(std::ostream &out, const Game &g);
+        void undo();
+        void setUp();
 };
 
 #endif

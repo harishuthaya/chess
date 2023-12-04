@@ -40,6 +40,12 @@ Board::Board(TextDisplay *td): board{}, winState{WinState::InProgress}, td{td}, 
 }
 
 bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, char c) {
+    Colour pieceColour = board[x][y]->getColour();
+
+    if (pieceColour != playerColour) {
+        return false;
+    }
+
     if (c == 'k' || c == 'K') {
         cerr << "Pawn promotion is king is illegal" << endl;
         return false;
@@ -54,9 +60,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
         cerr << "Invalid promotion - Pawn must be promoted to a Black Piece" << endl;
         return false;
     }
-
-    Colour pieceColor = board[x][y]->getColour();
-
+    
     bool success = moveSuccess(x, y, newX, newY, playerColour);
     if (!success) {
         return false;
@@ -65,13 +69,12 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
     lastMove = board[newX][newY].get();
     lastOldX = x;
     lastOldY = y;
-
     if (board[newX][newY].get()->getType() == Type::Pawn) {
-        int playerId = (pieceColor == Colour::Black) ? 2 : 1;
+        int playerId = (pieceColour == Colour::Black) ? 2 : 1;
         this->addPiece(c, newX, newY, playerId);
     }
 
-    Colour opponentColour = (pieceColor == Colour::White) ? Colour::Black : Colour::White;
+    Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
 
     if (isCheck(opponentColour)) {
         string s = (opponentColour == Colour::Black) ? "Black" : "White";
@@ -103,8 +106,14 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     if (pieceColour != playerColour) {
         return false;
     }
+
+    if (lastMove) {
+        movesHistory.push(Move(lastOldX, lastOldY, lastMove, lastMoveResult, lastMoveHasMoveState, lastCapturedHasMoveState, std::move(lastCaptured)));
+    }
     
-    MoveResult result = board[x][y]->moveSuccess(newX, newY);
+    lastMoveHasMoveState = board[x][y].get()->getHasMoved();
+    lastCapturedHasMoveState = board[newX][newY].get()->getHasMoved();
+    MoveResult result = board[x][y]->moveSuccess(newX, newY);        
     if (result == MoveResult::Failure) {
         return false;
     }
@@ -119,13 +128,17 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         if (isCheck(pieceColour)) {
             cerr << "can't castle" << endl;
             board[x][y] = std::move(board[newX][newY]);
+            board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
             board[x][rookY] = std::move(board[x][rookNewY]);
+            board[x][rookNewY] = make_unique<NullPiece>(x, rookNewY, *this);
             board[x][y].get()->setHasMoved(false);
             board[x][rookY].get()->setHasMoved(false);
             board[x][y].get()->setPosition(x, y);
             board[x][rookY]->setPosition(x, rookY);
             return false;
         }
+        lastCaptured = nullptr;
+        lastMoveResult = MoveResult::Castle;
         lastMove = board[newX][newY].get();
         lastOldX = x;
         lastOldY = y;
@@ -152,6 +165,11 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
 
         board[capturedPawnX][capturedPawnY]->attach(td);
         board[x][y]->attach(td);
+        lastCaptured = std::move(tempDest);
+        lastMove = board[newX][newY].get();
+        lastOldX = x;
+        lastOldY = y;
+        lastMoveResult = MoveResult::EnPassant;
         return true;
     }
 
@@ -168,9 +186,11 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     }
     
     board[x][y]->attach(td);
+    lastCaptured = std::move(tempDest);
     lastMove = board[newX][newY].get();
     lastOldX = x;
     lastOldY = y;
+    lastMoveResult = MoveResult::Move;
 
     Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
 
@@ -302,85 +322,26 @@ bool Board::isCheckmate(Colour playerColour) {
         return false;
     }
 
-    Piece* king = (playerColour == Colour::White) ? whiteKing : blackKing;
-    if (!king) {
-        return false;
-    }
+    for (int x = 0; x < boardSize; x++) {
+        for (int y = 0; y < boardSize; y++) {
+            Piece* piece = getPiece(x, y);
+            if (piece && piece->getColour() == playerColour) {
+                for (int newX = 0; newX < boardSize; newX++) {
+                    for (int newY = 0; newY < boardSize; newY++) {
+                        if (piece->isValidMove(newX, newY)) {
 
-    // Check if the king is able to move
-    for (int dx = -1; dx <= 1; ++dx) {
-        for (int dy = -1; dy <= 1; ++dy) {
-            if (dx == 0 && dy == 0) continue; // Skip the current position of the king
-
-            int newX = king->getX() + dx;
-            int newY = king->getY() + dy;
-
-            if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize && king->isValidMove(newX, newY)) {
-                return false;
-            }
-        }
-    }
-
-    // Loop over every piece
-    for (int i = 0; i < boardSize; ++i) {
-        for (int j = 0; j < boardSize; ++j) {
-            Piece* piece = getPiece(i, j);
-            if (piece->getColour() != playerColour) continue;
-
-            // Loop over every possible move it can make
-            for (int i2 = 0; i2 < boardSize; ++i2) {
-                for (int j2 = 0; j2 < boardSize; ++j2) {
-                    if (piece->getX() == i2 && piece->getY() == j2) continue;
-
-                    // Simulate the move and check if it keeps the king in check
-                    int x = piece->getX();
-                    int y = piece->getY();
-                    auto tempDest = std::move(board[i2][j2]);
-                    board[i2][j2] = std::move(board[x][y]);
-                    board[x][y] = make_unique<NullPiece>(x, y, *this);
-                    if (isCheck(playerColour)) {
-                        board[i2][j2]->moveSuccess(x, y);
-                        board[x][y] = std::move(board[i2][j2]);
-                        board[i2][j2] = std::move(tempDest);
-                        board[i2][j2]->attach(td);
-                    } else {
-                        // If it makes the king no longer in check, not a checkmate
-                        board[i2][j2]->moveSuccess(x, y);
-                        board[x][y] = std::move(board[i2][j2]);
-                        board[i2][j2] = std::move(tempDest);
-                        board[i2][j2]->attach(td);
-                        return false;
+                        }
                     }
                 }
             }
         }
     }
 
-    // If all possible moves still result in check, then it's checkmate
-    return true;
+    return false;
 }
 
 bool Board::isStalemate(Colour playerColour) {
-    for (int i = 0; i < boardSize; ++i) {
-        for (int j = 0; j < boardSize; ++j) {
-            Piece* piece = getPiece(i, j);
-            if (piece->getColour() != playerColour) continue;
-
-            // Loop over every possible move it can make
-            for (int i2 = 0; i2 < boardSize; ++i2) {
-                for (int j2 = 0; j2 < boardSize; ++j2) {
-                    if (piece->getX() == i2 && piece->getY() == j2) continue;
-
-                    // See if the move is valid
-                    if (piece->isValidMove(i2, j2)) {
-                        return false;
-                    }
-                }
-            }
-        }
-    }
-
-    return true;
+    return false;
 }
 
 
@@ -427,4 +388,173 @@ bool Board::isPawnCorrect() const {
 ostream &operator<<(ostream &out, const Board &b) {
   out << *b.td;
   return out;
+}
+
+bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour) {
+    if (newX < 0 || newX >= boardSize || newY < 0 || newY >= boardSize ||
+        x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
+        return false;
+    }
+
+    if (x == newX && y == newY) {
+        return false;
+    }
+
+    Colour pieceColour = board[x][y]->getColour();
+
+    if (pieceColour != playerColour) {
+        return false;
+    }
+    
+    MoveResult result = board[x][y]->moveSuccess(newX, newY);
+    if (result == MoveResult::Failure) {
+        return false;
+    }
+
+    bool canUncheck = false;
+
+    if (result == MoveResult::Castle) {
+        int rookY = (newY > y) ? boardSize - 1 : 0;
+        int rookNewY = (newY > y) ? newY - 1 : newY + 1;
+        board[x][rookNewY] = std::move(board[x][rookY]);
+        board[newX][newY] = std::move(board[x][y]);
+        board[x][y] = make_unique<NullPiece>(x, y, *this);
+        board[x][rookY] = make_unique<NullPiece>(x, rookY, *this);
+        if (isCheck(pieceColour)) {
+            canUncheck = false;
+        }
+        canUncheck = true;
+
+        board[x][y] = std::move(board[newX][newY]);
+        board[x][rookY] = std::move(board[x][rookNewY]);
+        board[x][y].get()->setHasMoved(false);
+        board[x][rookY].get()->setHasMoved(false);
+        board[x][y].get()->setPosition(x, y);
+        board[x][rookY]->setPosition(x, rookY);
+
+        return canUncheck;
+    }
+
+    if (result == MoveResult::EnPassant) {
+        int capturedPawnX = x;
+        int capturedPawnY = newY;
+        auto tempDest = std::move(board[capturedPawnX][capturedPawnY]);
+        board[capturedPawnX][capturedPawnY] = make_unique<NullPiece>(capturedPawnX, capturedPawnY, *this);
+        board[newX][newY] = std::move(board[x][y]);
+        board[x][y] = make_unique<NullPiece>(x, y, *this);
+        if (isCheck(pieceColour)) {
+            board[x][y] = std::move(board[newX][newY]);
+            board[x][y].get()->setPosition(x, y);
+            board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
+            board[capturedPawnX][capturedPawnY] = std::move(tempDest);
+            board[newX][newY]->attach(td);
+            board[capturedPawnX][capturedPawnY]->attach(td);
+            cerr << "illegal move to put the king in check" << endl;
+            return false;
+        }
+
+        board[capturedPawnX][capturedPawnY]->attach(td);
+        board[x][y]->attach(td);
+        return true;
+    }
+
+    auto tempDest = std::move(board[newX][newY]);
+    board[newX][newY] = std::move(board[x][y]);
+    board[x][y] = make_unique<NullPiece>(x, y, *this);
+    if (isCheck(pieceColour)) {
+        board[newX][newY]->setPosition(x, y);
+        board[x][y] = std::move(board[newX][newY]);
+        board[newX][newY] = std::move(tempDest);
+        cerr << "illegal move to put the king in check" << endl;
+        board[newX][newY]->attach(td);
+        return false;
+    }
+    
+    board[x][y]->attach(td);
+    lastMove = board[newX][newY].get();
+    lastOldX = x;
+    lastOldY = y;
+
+    Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
+
+    return true;
+}
+
+bool Board::undoMove() {
+    if (movesHistory.empty()) {
+        return false;
+    }
+    if (lastMoveResult == MoveResult::Move) {
+        int newX = lastMove->getX();
+        int newY = lastMove->getY();
+        board[lastOldX][lastOldY] = std::move(board[newX][newY]);
+        board[newX][newY] = std::move(lastCaptured);
+        board[lastOldX][lastOldY].get()->setPosition(lastOldX, lastOldY);
+        board[newX][newY].get()->setPosition(newX, newY);
+        board[lastOldX][lastOldY].get()->setHasMoved(lastMoveHasMoveState);
+        board[newX][newY].get()->setHasMoved(lastCapturedHasMoveState);
+        if (!movesHistory.empty()) {
+            lastOldX = movesHistory.top().lastOldX;
+            lastOldY = movesHistory.top().lastOldY;
+            lastMove = movesHistory.top().lastMove;
+            lastCapturedHasMoveState = movesHistory.top().lastCapturedHasMoveState;
+            lastMoveHasMoveState = movesHistory.top().lastMoveHasMoveState;
+            lastMoveResult = movesHistory.top().moveResult;
+            lastCaptured = std::move(movesHistory.top().lastCaptured);
+            movesHistory.pop();
+        }
+        return true;
+    }
+    if (lastMoveResult == MoveResult::EnPassant) {
+        int newX = lastMove->getX();
+        int newY = lastMove->getY();
+        int capturedPawnX = lastOldX;
+        int capturedPawnY = newY;
+        board[lastOldX][lastOldY] = std::move(board[newX][newY]);
+        board[lastOldX][lastOldY].get()->setPosition(lastOldX, lastOldY);
+        board[lastOldX][lastOldY].get()->setHasMoved(lastMoveHasMoveState);
+        board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
+        board[newX][newY]->attach(td);
+        board[capturedPawnX][capturedPawnY] = std::move(lastCaptured);
+        board[capturedPawnX][capturedPawnY]->setPosition(capturedPawnX, capturedPawnY);
+        board[capturedPawnX][capturedPawnY]->setHasMoved(lastCapturedHasMoveState);
+        if (!movesHistory.empty()) {
+            lastOldX = movesHistory.top().lastOldX;
+            lastOldY = movesHistory.top().lastOldY;
+            lastMove = movesHistory.top().lastMove;
+            lastCapturedHasMoveState = movesHistory.top().lastCapturedHasMoveState;
+            lastMoveHasMoveState = movesHistory.top().lastMoveHasMoveState;
+            lastMoveResult = movesHistory.top().moveResult;
+            lastCaptured = std::move(movesHistory.top().lastCaptured);
+            movesHistory.pop();
+        }
+        return true;
+    }
+    if (lastMoveResult == MoveResult::Castle) {
+        int newX = lastMove->getX();
+        int newY = lastMove->getY();
+        int rookY = (newY > lastOldY) ? boardSize - 1 : 0;
+        int rookNewY = (newY > lastOldY) ? newY - 1 : newY + 1;
+        board[lastOldX][lastOldY] = std::move(board[newX][newY]);
+        board[lastOldX][lastOldY].get()->setHasMoved(false);
+        board[lastOldX][lastOldY].get()->setPosition(lastOldX, lastOldY);
+        board[lastOldX][rookY] = std::move(board[lastOldX][rookNewY]);
+        board[lastOldX][rookY].get()->setHasMoved(false);
+        board[lastOldX][rookY]->setPosition(lastOldX, rookY);
+        board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
+        board[lastOldX][rookNewY] = make_unique<NullPiece>(lastOldX, rookNewY, *this);
+        if (!movesHistory.empty()) {
+            lastOldX = movesHistory.top().lastOldX;
+            lastOldY = movesHistory.top().lastOldY;
+            lastMove = movesHistory.top().lastMove;
+            lastCapturedHasMoveState = movesHistory.top().lastCapturedHasMoveState;
+            lastMoveHasMoveState = movesHistory.top().lastMoveHasMoveState;
+            lastMoveResult = movesHistory.top().moveResult;
+            lastCaptured = std::move(movesHistory.top().lastCaptured);
+            movesHistory.pop();
+        }
+        return true;
+    }
+
+    return false;
 }

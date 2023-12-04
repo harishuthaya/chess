@@ -38,12 +38,16 @@ void Game::move(Colour curTurn) {
     vector<int> newCoords = convertCoords(move[1]);
     Piece* isPawn = chessboard->getPiece(oldCoords[0], oldCoords[1]);
     bool moveSuccess;
-    if ((isPawn->getType() == Type::Pawn) && 
-        (newCoords[0] == 0 || newCoords[0] == chessboard->getSize() - 1) &&
-        (newCoords[1] == 0 || newCoords[1] == chessboard->getSize() - 1)) 
+    if (isPawn->getType() == Type::Pawn) 
     {
-      char c = (turn == Colour::White) ? players[0]->getPromotion() : players[1]->getPromotion();
-      moveSuccess = chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn, c);
+      if (((curTurn == Colour::White) && (newCoords[0] == 0))||
+         ((curTurn == Colour::Black) && (newCoords[0] == chessboard->getSize() - 1)))
+         {
+          char c = (turn == Colour::White) ? players[0]->getPromotion() : players[1]->getPromotion();
+          moveSuccess = chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn, c);
+      } else {
+        moveSuccess = chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn);
+      }
     } else {
       moveSuccess = chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn);
     }
@@ -91,6 +95,18 @@ void Game::addPiece(char piece, string coords) {
   chessboard->addPiece(piece, intCoords[0], intCoords[1], 1);
 }
 
+void Game::undo() {
+  bool result = chessboard->undoMove();
+  if (result) {
+    turn = (turn == Colour::White) ? Colour::Black : Colour::White;
+  }
+}
+
+void Game::setUp() {
+  td = make_unique<TextDisplay>(8);
+  chessboard = make_unique<Board>(td.get());
+}
+
 void Game::removePiece(string coords) {
   vector<int> intCoords = convertCoords(coords);
   chessboard->removePiece(intCoords[0], intCoords[1]);
@@ -100,8 +116,12 @@ void Game::init(string p1, string p2) {
   this->addPlayer(p1, Colour::White);
   this->addPlayer(p2, Colour::Black);
   
-  td = make_unique<TextDisplay>(8);
-  chessboard = make_unique<Board>(td.get());
+  if (!td) {
+    td = make_unique<TextDisplay>(8);
+  }
+  if (!chessboard) {
+    chessboard = make_unique<Board>(td.get());
+  }
   gameActive = true;
 }
 

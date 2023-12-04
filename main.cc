@@ -17,13 +17,15 @@ int main()
             string p1, p2;
             cin >> p1 >> p2;
             game.init(p1, p2);
-            cout << game;
+            std::cout << game;
         } else if (cmd == "resign" && game.isGameActive()) {
             game.resign(game.getTurn());
         } else if (cmd == "move" && game.isGameActive()) {
             game.move(game.getTurn());
-            cout << game;
+            std::cout << game;
         } else if (cmd == "setup" && !game.isGameActive()) {
+            game.setUp();
+            std::cout << game;
             while (true) {
                 cin >> cmd;
                 if (cmd == "+") {
@@ -31,12 +33,12 @@ int main()
                     string coords;
                     cin >> piece >> coords;
                     game.addPiece(piece, coords);
-                    cout << game;
+                    std::cout << game;
                 } else if (cmd == "-") {
                     string coords;
                     cin >> coords;
                     game.removePiece(coords);
-                    cout << game;
+                    std::cout << game;
                 } else if (cmd == "=") {
                     string colour;
                     cin >> colour;
@@ -47,15 +49,18 @@ int main()
                     }
                 }
             }
+        } else if (cmd == "undo" && game.isGameActive()) {
+            game.undo();
+            std::cout << game;
         } else {
-            cerr << "Invalid command" << endl; 
+            std::cerr << "Invalid command" << endl; 
         }
     }
 
     vector<int> scores = game.getScores();
-    cout << "Final Score:" << endl;
-    cout << "White: " << scores[0] << endl;
-    cout << "Black: " << scores[1] << endl;
+    std::cout << "Final Score:" << endl;
+    std::cout << "White: " << scores[0] << endl;
+    std::cout << "Black: " << scores[1] << endl;
 }
 
 
