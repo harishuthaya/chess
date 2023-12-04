@@ -2,7 +2,10 @@
 #include <iostream>
 using namespace std;
 
-Board::Board(TextDisplay *td): board{}, winState{WinState::InProgress}, td{td}, lastMove{nullptr} {
+Board::Board(TextDisplay *td): board{}, winState{WinState::InProgress}, td{td}, whiteKing{nullptr}, 
+    blackKing{nullptr}, lastMove{nullptr}, lastOldX{-1}, lastOldY{-1}, lastCaptured{nullptr}, 
+    lastMoveResult{MoveResult::Failure}, lastMoveHasMoveState{false}, lastCapturedHasMoveState{false}
+    {
     board.resize(boardSize);
     for (int i = 0; i < boardSize; ++i) {
         board[i].resize(boardSize);
@@ -12,7 +15,10 @@ Board::Board(TextDisplay *td): board{}, winState{WinState::InProgress}, td{td}, 
             board[i][j]->attach(td);
         }
     }
-    // Adds the black pieces
+}
+
+void Board::init() {
+        // Adds the black pieces
     this->addPiece('r', 0, 0, 1);
     this->addPiece('n', 0, 1, 1);
     this->addPiece('b', 0, 2, 1);
@@ -572,4 +578,31 @@ bool Board::undoMove() {
     }
 
     return false;
+}
+
+void Board::clear() {
+    for (int i = 0; i < boardSize; ++i) {
+        for (int j = 0; j < boardSize; ++j) {
+            // Replace existing piece with a NullPiece
+            board[i][j] = make_unique<NullPiece>(i, j, *this);
+            // Re-attach the TextDisplay observer
+            board[i][j]->attach(td);
+        }
+    }
+
+    winState = WinState::InProgress;
+    lastMove = nullptr;
+    lastOldX = -1;
+    lastOldY = -1;
+    lastCaptured = nullptr;
+    lastMoveResult = MoveResult::Failure;
+    lastMoveHasMoveState = false;
+    lastCapturedHasMoveState = false;
+    while (!movesHistory.empty()) {
+        movesHistory.pop();
+    }
+    whiteKing = nullptr;
+    blackKing = nullptr;
+    whiteKingNum = 0;
+    blackKingNum = 0;
 }

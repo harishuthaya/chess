@@ -55,6 +55,8 @@ class Board {
 
     public:
         Board(TextDisplay *td);
+        void clear();
+        void init();
         virtual ~Board() = default;
         bool moveSuccess(int x, int y, int newX, int newY, Colour playerColour);
         bool moveSuccess(int x, int y, int newX, int newY, Colour playerColour, char c);
