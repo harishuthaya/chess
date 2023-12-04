@@ -36,7 +36,18 @@ void Game::move(Colour curTurn) {
     vector<string> move = (turn == Colour::White) ? players[0]->getMove() : players[1]->getMove();
     vector<int> oldCoords = convertCoords(move[0]);
     vector<int> newCoords = convertCoords(move[1]);
-    if (chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn)) {
+    Piece* isPawn = chessboard->getPiece(oldCoords[0], oldCoords[1]);
+    bool moveSuccess;
+    if ((isPawn->getType() == Type::Pawn) && 
+        (newCoords[0] == 0 || newCoords[0] == chessboard->getSize() - 1) &&
+        (newCoords[1] == 0 || newCoords[1] == chessboard->getSize() - 1)) 
+    {
+      char c = (turn == Colour::White) ? players[0]->getPromotion() : players[1]->getPromotion();
+      moveSuccess = chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn, c);
+    } else {
+      moveSuccess = chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn);
+    }
+    if (moveSuccess) {
         if (curTurn == Colour::White) {
             turn = Colour::Black;
         } else {
