@@ -330,7 +330,11 @@ bool Board::isCheckmate(Colour playerColour) {
                 for (int newX = 0; newX < boardSize; newX++) {
                     for (int newY = 0; newY < boardSize; newY++) {
                         if (piece->isValidMove(newX, newY)) {
-
+                            stimulateMove(x, y, newX, newY, playerColour);
+                            if (!isCheck(playerColour)) {
+                                return false;
+                            }
+                            undoMove();
                         }
                     }
                 }
@@ -338,7 +342,7 @@ bool Board::isCheckmate(Colour playerColour) {
         }
     }
 
-    return false;
+    return true;
 }
 
 bool Board::isStalemate(Colour playerColour) {
