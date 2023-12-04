@@ -326,7 +326,7 @@ bool Board::isCheckmate(Colour playerColour) {
     for (int x = 0; x < boardSize; x++) {
         for (int y = 0; y < boardSize; y++) {
             Piece* piece = getPiece(x, y);
-            if (piece && piece->getColour() == playerColour) {
+            if (!piece->isEmpty() && piece->getColour() == playerColour) {
                 for (int newX = 0; newX < boardSize; newX++) {
                     for (int newY = 0; newY < boardSize; newY++) {
                         if (stimulateMove(x, y, newX, newY, playerColour)) {
@@ -454,7 +454,6 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
             board[capturedPawnX][capturedPawnY] = std::move(tempDest);
             board[newX][newY]->attach(td);
             board[capturedPawnX][capturedPawnY]->attach(td);
-            cerr << "illegal move to put the king in check" << endl;
             return false;
         }
 
@@ -470,7 +469,6 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
         board[newX][newY]->setPosition(x, y);
         board[x][y] = std::move(board[newX][newY]);
         board[newX][newY] = std::move(tempDest);
-        cerr << "illegal move to put the king in check" << endl;
         board[newX][newY]->attach(td);
         return false;
     }
