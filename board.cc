@@ -2,7 +2,10 @@
 #include <iostream>
 using namespace std;
 
-Board::Board(TextDisplay *td): board{}, winState{WinState::InProgress}, td{td}, lastMove{nullptr} {
+Board::Board(TextDisplay *td): board{}, winState{WinState::InProgress}, td{td}, whiteKing{nullptr}, 
+    blackKing{nullptr}, lastMove{nullptr}, lastOldX{-1}, lastOldY{-1}, lastCaptured{nullptr}, 
+    lastMoveResult{MoveResult::Failure}, lastMoveHasMoveState{false}, lastCapturedHasMoveState{false}
+    {
     board.resize(boardSize);
     for (int i = 0; i < boardSize; ++i) {
         board[i].resize(boardSize);
@@ -12,7 +15,10 @@ Board::Board(TextDisplay *td): board{}, winState{WinState::InProgress}, td{td}, 
             board[i][j]->attach(td);
         }
     }
-    // Adds the black pieces
+}
+
+void Board::init() {
+        // Adds the black pieces
     this->addPiece('r', 0, 0, 1);
     this->addPiece('n', 0, 1, 1);
     this->addPiece('b', 0, 2, 1);
@@ -326,7 +332,7 @@ bool Board::isCheckmate(Colour playerColour) {
     for (int x = 0; x < boardSize; x++) {
         for (int y = 0; y < boardSize; y++) {
             Piece* piece = getPiece(x, y);
-            if (piece && piece->getColour() == playerColour) {
+            if (!piece->isEmpty() && piece->getColour() == playerColour) {
                 for (int newX = 0; newX < boardSize; newX++) {
                     for (int newY = 0; newY < boardSize; newY++) {
                         if (stimulateMove(x, y, newX, newY, playerColour)) {
@@ -470,7 +476,6 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
             board[capturedPawnX][capturedPawnY] = std::move(tempDest);
             board[newX][newY]->attach(td);
             board[capturedPawnX][capturedPawnY]->attach(td);
-            cerr << "illegal move to put the king in check" << endl;
             return false;
         }
 
@@ -486,7 +491,6 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
         board[newX][newY]->setPosition(x, y);
         board[x][y] = std::move(board[newX][newY]);
         board[newX][newY] = std::move(tempDest);
-        cerr << "illegal move to put the king in check" << endl;
         board[newX][newY]->attach(td);
         return false;
     }
@@ -590,4 +594,31 @@ bool Board::undoMove() {
     }
 
     return false;
+}
+
+void Board::clear() {
+    for (int i = 0; i < boardSize; ++i) {
+        for (int j = 0; j < boardSize; ++j) {
+            // Replace existing piece with a NullPiece
+            board[i][j] = make_unique<NullPiece>(i, j, *this);
+            // Re-attach the TextDisplay observer
+            board[i][j]->attach(td);
+        }
+    }
+
+    winState = WinState::InProgress;
+    lastMove = nullptr;
+    lastOldX = -1;
+    lastOldY = -1;
+    lastCaptured = nullptr;
+    lastMoveResult = MoveResult::Failure;
+    lastMoveHasMoveState = false;
+    lastCapturedHasMoveState = false;
+    while (!movesHistory.empty()) {
+        movesHistory.pop();
+    }
+    whiteKing = nullptr;
+    blackKing = nullptr;
+    whiteKingNum = 0;
+    blackKingNum = 0;
 }
