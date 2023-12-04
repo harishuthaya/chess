@@ -121,8 +121,8 @@ void Game::init(string p1, string p2) {
   }
   if (!chessboard) {
     chessboard = make_unique<Board>(td.get());
+    chessboard->init();
   }
-  chessboard->init();
   gameActive = true;
 }
 
