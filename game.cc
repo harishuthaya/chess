@@ -62,15 +62,18 @@ void Game::move(Colour curTurn) {
     if (currentState == WinState::Player1Win) {
       players.at(0)->incrementScore(1);
       gameActive = false;
+      setupUsed = false;
     }
     else if (currentState == WinState::Player2Win) {
       players.at(1)->incrementScore(1);
       gameActive = false;
+      setupUsed = false;
     }
     else if (currentState == WinState::Tie) {
       players.at(0)->incrementScore(0.5);
       players.at(1)->incrementScore(0.5);
       gameActive = false;
+      setupUsed = false;
     }
 }
 
@@ -105,6 +108,7 @@ void Game::undo() {
 void Game::setUp() {
   td = make_unique<TextDisplay>(8);
   chessboard = make_unique<Board>(td.get(), gd.get());
+  setupUsed = true;
 }
 
 void Game::removePiece(string coords) {
@@ -122,7 +126,7 @@ void Game::init(string p1, string p2) {
   if (!gd) {
     gd = make_unique<GraphicsDisplay>(9, xw);
   }
-  if (!chessboard) {
+  if (!chessboard || !setupUsed) {
     chessboard = make_unique<Board>(td.get(), gd.get());
     chessboard->init();
   }

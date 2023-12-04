@@ -20,6 +20,7 @@ class Game {
     std::vector<std::unique_ptr<Player>> players;
     Colour turn;
     bool gameActive;
+    bool setupUsed;
     Xwindow &xw;
 
     std::vector<int> convertCoords(std::string coords) const;
