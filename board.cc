@@ -135,7 +135,6 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     if (result == MoveResult::EnPassant) {
         int capturedPawnX = x;
         int capturedPawnY = newY;
-        cout << capturedPawnX << capturedPawnY;
         auto tempDest = std::move(board[capturedPawnX][capturedPawnY]);
         board[capturedPawnX][capturedPawnY] = make_unique<NullPiece>(capturedPawnX, capturedPawnY, *this);
         board[newX][newY] = std::move(board[x][y]);

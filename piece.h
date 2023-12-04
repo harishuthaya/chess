@@ -21,7 +21,7 @@ class Piece {
     bool hasMoved;
 
   public:
-    Piece(int x, int y, Colour playerColour, const Board& board, Type pieceType);
+    Piece(int x, int y, Colour playerColour, const Board& board, Type pieceType, bool hasMoved = false);
     virtual ~Piece() = default;
 
     int getX() const;

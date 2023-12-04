@@ -4,8 +4,8 @@
 
 using namespace std;
 
-Pawn::Pawn(int x, int y, Colour playerColour, const Board& board) :
-    Piece(x, y, playerColour, board, Type::Pawn) {
+Pawn::Pawn(int x, int y, Colour playerColour, const Board& board, bool hasMoved) :
+    Piece(x, y, playerColour, board, Type::Pawn, hasMoved) {
 }
 
 MoveResult Pawn::moveSuccess(int newX, int newY) {

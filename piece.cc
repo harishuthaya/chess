@@ -2,8 +2,8 @@
 #include "observer.h"
 using namespace std;
 
-Piece::Piece(int x, int y, Colour playerColour, const Board& board, Type pieceType) 
-    : x{x}, y{y}, playerColour{playerColour}, board{board}, pieceType{pieceType}, observers{}, hasMoved{false} {}
+Piece::Piece(int x, int y, Colour playerColour, const Board& board, Type pieceType, bool hasMoved) 
+    : x{x}, y{y}, playerColour{playerColour}, board{board}, pieceType{pieceType}, observers{}, hasMoved{hasMoved} {}
 
 int Piece::getX() const {
     return x;

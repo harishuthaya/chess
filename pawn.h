@@ -6,7 +6,7 @@
 
 class Pawn : public Piece {
     public:
-        Pawn(int x, int y, Colour playerColour, const Board& board);
+        Pawn(int x, int y, Colour playerColour, const Board& board, bool hasMoved = false);
 
         MoveResult moveSuccess(int newX, int newY) override;
         bool isValidMove(int newX, int newY) const override;
