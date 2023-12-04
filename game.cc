@@ -33,7 +33,7 @@ void Game::addPlayer(string player, Colour colour) {
 }
 
 void Game::move(Colour curTurn) {
-    vector<string> move = players[0]->getMove();
+    vector<string> move = (turn == Colour::White) ? players[0]->getMove() : players[1]->getMove();
     vector<int> oldCoords = convertCoords(move[0]);
     vector<int> newCoords = convertCoords(move[1]);
     if (chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn)) {
