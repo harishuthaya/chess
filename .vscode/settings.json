@@ -50,6 +50,7 @@
         "typeinfo": "cpp",
         "iostream": "cpp",
         "cstring": "cpp",
-        "cwctype": "cpp"
+        "cwctype": "cpp",
+        "chrono": "cpp"
     }
 }

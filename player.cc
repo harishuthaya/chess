@@ -12,3 +12,7 @@ int Player::getScore() const {
 void Player::incrementScore(float i) {
     score += i;
 }
+
+Colour Player::getColour() const {
+    return colour;
+}

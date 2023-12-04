@@ -14,6 +14,7 @@ class Player {
         virtual ~Player() = default;
         virtual std::vector<std::string> getMove() const = 0;
         int getScore() const;
+        Colour getColour() const;
         void incrementScore(float i);
         virtual char getPromotion() const = 0;
 };

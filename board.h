@@ -1,6 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <stack>
 #include <vector>
 #include <string>
 #include <memory>
@@ -18,6 +19,23 @@ class Piece;
 
 enum class WinState { Player1Win, Player2Win, Tie, InProgress };
 
+struct Move {
+    int lastOldX;
+    int lastOldY;
+    Piece* lastMove;
+    MoveResult moveResult;
+    bool lastMoveHasMoveState;
+    bool lastCapturedHasMoveState;
+    std::unique_ptr<Piece> lastCaptured;
+
+    Move(int lastOldX, int lastOldY, Piece* lastMove, MoveResult moveResult, bool lastMoveHasMoveState,
+    bool lastCapturedHasMoveState, std::unique_ptr<Piece>&& lastCaptured)
+        : lastOldX(lastOldX), lastOldY{lastOldY}, lastMove{lastMove}, moveResult(moveResult), 
+        lastMoveHasMoveState{lastMoveHasMoveState}, lastCapturedHasMoveState{lastCapturedHasMoveState},
+        lastCaptured{std::move(lastCaptured)} {}
+};
+
+
 class Board {
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
     WinState winState;
@@ -29,13 +47,19 @@ class Board {
     Piece* lastMove;
     int lastOldX;
     int lastOldY;
+    std::unique_ptr<Piece> lastCaptured;
+    MoveResult lastMoveResult;
+    bool lastMoveHasMoveState;
+    bool lastCapturedHasMoveState;
     int whiteKingNum = 0;
     int blackKingNum = 0;
+    std::stack<Move> movesHistory;
 
     public:
         Board(TextDisplay *td, GraphicsDisplay *gd);
+        void clear();
+        void init();
         virtual ~Board() = default;
-
         bool moveSuccess(int x, int y, int newX, int newY, Colour playerColour);
         bool moveSuccess(int x, int y, int newX, int newY, Colour playerColour, char c);
         WinState getWinState();
@@ -53,6 +77,8 @@ class Board {
         bool isOneKing() const;
         bool isPawnCorrect() const;
         friend std::ostream &operator<<(std::ostream &out, const Board &b);
+        bool stimulateMove(int x, int y, int newX, int newY, Colour playerColour);
+        bool undoMove();
 };
 
 #endif
