@@ -528,9 +528,6 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
 }
 
 bool Board::undoMove() {
-    if (movesHistory.empty()) {
-        return false;
-    }
     if (lastMoveResult == MoveResult::Move) {
         int newX = lastMove->getX();
         int newY = lastMove->getY();
@@ -611,8 +608,8 @@ bool Board::undoMove() {
             lastMoveResult = movesHistory.top().moveResult;
             lastCaptured = std::move(movesHistory.top().lastCaptured);
             movesHistory.pop();
+            undoMove();
         }
-        undoMove();
     }
 
     return false;
