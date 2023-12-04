@@ -8,7 +8,7 @@
 
 using namespace std;
 
-Game::Game(): turn{Colour::White}, gameActive{false} {
+Game::Game(Xwindow &xw): turn{Colour::White}, gameActive{false}, xw{xw} {
 
 }
 
@@ -104,7 +104,7 @@ void Game::undo() {
 
 void Game::setUp() {
   td = make_unique<TextDisplay>(8);
-  chessboard = make_unique<Board>(td.get());
+  chessboard = make_unique<Board>(td.get(), gd.get());
 }
 
 void Game::removePiece(string coords) {
@@ -119,8 +119,11 @@ void Game::init(string p1, string p2) {
   if (!td) {
     td = make_unique<TextDisplay>(8);
   }
+  if (!gd) {
+    gd = make_unique<GraphicsDisplay>(9, xw);
+  }
   if (!chessboard) {
-    chessboard = make_unique<Board>(td.get());
+    chessboard = make_unique<Board>(td.get(), gd.get());
     chessboard->init();
   }
   gameActive = true;

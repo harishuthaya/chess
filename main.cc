@@ -1,13 +1,15 @@
 #include "game.h"
+#include "window.h"
 #include <iostream>
 #include <string>
 #include <vector>
 using namespace std;
 
 int main()
-{
+{   
+    Xwindow xw{};
     string cmd;
-    Game game;
+    Game game{xw};
 
     while (true) {
         cin >> cmd;
