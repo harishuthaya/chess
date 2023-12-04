@@ -31,7 +31,7 @@ class Game {
         bool verifySetup() const;
         Colour getTurn() const;
         void setTurn(std::string colour);
-        std::vector<int> getScores() const;
+        std::vector<float> getScores() const;
         bool isGameActive() const;
         friend std::ostream &operator<<(std::ostream &out, const Game &g);
         void undo();

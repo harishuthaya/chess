@@ -5,7 +5,7 @@ Player::Player(Colour colour): colour{colour}, score{0} {
     
 }
 
-int Player::getScore() const {
+float Player::getScore() const {
     return score;
 }
 

@@ -57,7 +57,7 @@ int main()
         }
     }
 
-    vector<int> scores = game.getScores();
+    vector<float> scores = game.getScores();
     std::cout << "Final Score:" << endl;
     std::cout << "White: " << scores[0] << endl;
     std::cout << "Black: " << scores[1] << endl;

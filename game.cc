@@ -138,11 +138,11 @@ Colour Game::getTurn() const {
     return this->turn;
 }
 
-vector<int> Game::getScores() const {
+vector<float> Game::getScores() const {
     if (players.empty() || players[0] == nullptr || players[1] == nullptr) {
-      return vector<int>{0, 0};
+      return vector<float>{0, 0};
     }
-    return vector<int>{players[0]->getScore(), players[1]->getScore()};
+    return vector<float>{players[0]->getScore(), players[1]->getScore()};
 }
 
 bool Game::isGameActive() const {
