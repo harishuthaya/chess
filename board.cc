@@ -119,7 +119,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     
     lastMoveHasMoveState = board[x][y].get()->getHasMoved();
     lastCapturedHasMoveState = board[newX][newY].get()->getHasMoved();
-    MoveResult result = board[x][y]->moveSuccess(newX, newY);        
+    MoveResult result = board[x][y]->moveSuccess(newX, newY);      
     if (result == MoveResult::Failure) {
         lastMoveResult = result;
         return false;
@@ -208,7 +208,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     if(isCheckmate(Colour::White)) {
         cout << "Checkmate! Black wins!" << endl;
         winState = WinState::Player2Win;
-    } else if (isCheckmate(Colour::Black)) {
+    }  else if (isCheckmate(Colour::Black)) {
         cout << "Checkmate! White wins!" << endl;
         winState = WinState::Player1Win;
     } else if (isStalemate(Colour::White) || isStalemate(Colour::Black)) {
@@ -355,7 +355,7 @@ bool Board::isStalemate(Colour playerColour) {
     for (int x = 0; x < boardSize; x++) {
         for (int y = 0; y < boardSize; y++) {
             Piece* piece = getPiece(x, y);
-            if (piece && piece->getColour() == playerColour) {
+            if (!piece->isEmpty() && piece->getColour() == playerColour) {
                 for (int newX = 0; newX < boardSize; newX++) {
                     for (int newY = 0; newY < boardSize; newY++) {
                         if (stimulateMove(x, y, newX, newY, playerColour)) {
@@ -432,13 +432,18 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
     if (pieceColour != playerColour) {
         return false;
     }
+
+    if (lastMoveResult != MoveResult::Failure) {
+        movesHistory.push(Move(lastOldX, lastOldY, lastMove, lastMoveResult, lastMoveHasMoveState, lastCapturedHasMoveState, std::move(lastCaptured)));
+    }
     
-    MoveResult result = board[x][y]->moveSuccess(newX, newY);
+    lastMoveHasMoveState = board[x][y].get()->getHasMoved();
+    lastCapturedHasMoveState = board[newX][newY].get()->getHasMoved();
+    MoveResult result = board[x][y]->moveSuccess(newX, newY);      
     if (result == MoveResult::Failure) {
+        lastMoveResult = result;
         return false;
     }
-
-    bool canUncheck = false;
 
     if (result == MoveResult::Castle) {
         int rookY = (newY > y) ? boardSize - 1 : 0;
@@ -448,18 +453,22 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
         board[x][y] = make_unique<NullPiece>(x, y, *this);
         board[x][rookY] = make_unique<NullPiece>(x, rookY, *this);
         if (isCheck(pieceColour)) {
-            canUncheck = false;
+            board[x][y] = std::move(board[newX][newY]);
+            board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
+            board[x][rookY] = std::move(board[x][rookNewY]);
+            board[x][rookNewY] = make_unique<NullPiece>(x, rookNewY, *this);
+            board[x][y].get()->setHasMoved(false);
+            board[x][rookY].get()->setHasMoved(false);
+            board[x][y].get()->setPosition(x, y);
+            board[x][rookY]->setPosition(x, rookY);
+            return false;
         }
-        canUncheck = true;
-
-        board[x][y] = std::move(board[newX][newY]);
-        board[x][rookY] = std::move(board[x][rookNewY]);
-        board[x][y].get()->setHasMoved(false);
-        board[x][rookY].get()->setHasMoved(false);
-        board[x][y].get()->setPosition(x, y);
-        board[x][rookY]->setPosition(x, rookY);
-
-        return canUncheck;
+        lastCaptured = nullptr;
+        lastMoveResult = MoveResult::Castle;
+        lastMove = board[newX][newY].get();
+        lastOldX = x;
+        lastOldY = y;
+        return true;
     }
 
     if (result == MoveResult::EnPassant) {
@@ -481,6 +490,11 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
 
         board[capturedPawnX][capturedPawnY]->attach(td);
         board[x][y]->attach(td);
+        lastCaptured = std::move(tempDest);
+        lastMove = board[newX][newY].get();
+        lastOldX = x;
+        lastOldY = y;
+        lastMoveResult = MoveResult::EnPassant;
         return true;
     }
 
@@ -496,12 +510,11 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
     }
     
     board[x][y]->attach(td);
+    lastCaptured = std::move(tempDest);
     lastMove = board[newX][newY].get();
     lastOldX = x;
     lastOldY = y;
-
-    Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
-
+    lastMoveResult = MoveResult::Move;
     return true;
 }
 
