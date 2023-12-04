@@ -329,9 +329,9 @@ bool Board::isCheckmate(Colour playerColour) {
             if (piece && piece->getColour() == playerColour) {
                 for (int newX = 0; newX < boardSize; newX++) {
                     for (int newY = 0; newY < boardSize; newY++) {
-                        if (piece->isValidMove(newX, newY)) {
-                            stimulateMove(x, y, newX, newY, playerColour);
+                        if (stimulateMove(x, y, newX, newY, playerColour)) {
                             if (!isCheck(playerColour)) {
+                                undoMove();
                                 return false;
                             }
                             undoMove();
