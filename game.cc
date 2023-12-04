@@ -37,7 +37,6 @@ void Game::move(Colour curTurn) {
     vector<int> oldCoords = convertCoords(move[0]);
     vector<int> newCoords = convertCoords(move[1]);
     if (chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn)) {
-        cout << "move succeeded" << endl;
         if (curTurn == Colour::White) {
             turn = Colour::Black;
         } else {
@@ -90,6 +89,9 @@ Colour Game::getTurn() const {
 }
 
 vector<int> Game::getScores() const {
+    if (players.empty() || players[0] == nullptr || players[1] == nullptr) {
+      return vector<int>{0, 0};
+    }
     return vector<int>{players[0]->getScore(), players[1]->getScore()};
 }
 

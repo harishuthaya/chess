@@ -216,7 +216,7 @@ bool Board::isCheck(Colour playerColour) const {
     return false;
 }
 
-bool Board::isCheckmate(Colour playerColour) const {
+bool Board::isCheckmate(Colour playerColour) {
     if (!isCheck(playerColour)) {
         return false;
     }
@@ -235,6 +235,36 @@ bool Board::isCheckmate(Colour playerColour) const {
 
             if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize && king->isValidMove(newX, newY)) {
                 return false;
+            }
+        }
+    }
+
+    for (int i = 0; i < boardSize; ++i) {
+        for (int j = 0; j < boardSize; ++j) {
+            Piece* piece = getPiece(i, j);
+            if (piece->getColour() != playerColour) continue;
+
+            for (int i2 = 0; i2 < boardSize; ++i2) {
+                for (int j2 = 0; j2 < boardSize; ++j2) {
+                    int x = piece->getX();
+                    int y = piece->getY();
+                    auto tempDest = std::move(board[i2][j2]);
+                    board[i2][j2] = std::move(board[x][y]);
+                    board[x][y] = make_unique<NullPiece>(x, y, *this);
+
+                    if (isCheck(playerColour)) {
+                        board[i2][j2]->moveSuccess(x, y);
+                        board[x][y] = std::move(board[i2][j2]);
+                        board[i2][j2] = std::move(tempDest);
+                        board[i2][j2]->attach(td);
+                    } else {
+                        board[i2][j2]->moveSuccess(x, y);
+                        board[x][y] = std::move(board[i2][j2]);
+                        board[i2][j2] = std::move(tempDest);
+                        board[i2][j2]->attach(td);
+                        return false;
+                    }
+                }
             }
         }
     }

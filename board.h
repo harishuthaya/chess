@@ -39,7 +39,7 @@ class Board {
         int getSize() const;
         bool isUnderAttack(int x, int y, Colour playerColour) const;
         bool isCheck(Colour playerColour) const;
-        bool isCheckmate(Colour playerColour) const;
+        bool isCheckmate(Colour playerColour);
         Piece* getPiece(int x, int y) const;
         Piece* getLastMove() const;
         int getLastOldX() const;
