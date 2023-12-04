@@ -371,7 +371,6 @@ bool Board::isStalemate(Colour playerColour) {
                             undoMove();
                             return false;
                         }
-                        undoMove();
                     }
                 }
             }
