@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Game::Game(Xwindow &xw, float &whiteScore, float &blackScore): turn{Colour::White}, gameActive{false}, xw{xw}, whiteScore{whiteScore}, blackScore{blackScore} {
+Game::Game(Xwindow &xw, float &whiteScore, float &blackScore): turn{Colour::White}, gameActive{false}, setupUsed{false}, xw{xw}, whiteScore{whiteScore}, blackScore{blackScore} {
 
 }
 
@@ -128,7 +128,14 @@ void Game::init(string p1, string p2) {
   if (!chessboard || !setupUsed) {
     chessboard = make_unique<Board>(td.get(), gd.get());
     chessboard->init();
-  } else if (chessboard && !setupUsed) chessboard->clear();
+  } else if (chessboard && !setupUsed) {
+    chessboard->clear();
+  }
+
+  if (!setupUsed) {
+    this->turn = Colour::White;
+  }
+  
   players.clear();
   this->addPlayer(p1, Colour::White);
   this->addPlayer(p2, Colour::Black);
