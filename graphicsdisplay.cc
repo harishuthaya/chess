@@ -4,7 +4,8 @@
 
 GraphicsDisplay::GraphicsDisplay(int gridSize, Xwindow &xw): gridSize{gridSize}, xw{xw} {
   xw.fillRectangle(0, 0, windowSize, windowSize, xw.Gray);
-	rectSize = windowSize / gridSize;
+	rectSize = windowSize / gridSize; // Size of each grid of the chessboard
+	// Printing the x and y axis labels
 	for (int i = 0; i < 8; ++i) {
 		char yAxisChar = '8' - i;
 		char xAxisChar = 'a' + i;
@@ -16,16 +17,18 @@ GraphicsDisplay::GraphicsDisplay(int gridSize, Xwindow &xw): gridSize{gridSize},
 }
 
 void GraphicsDisplay::notify(const Piece &p, int oldX, int oldY) {
-  int oldBackgroundColour = ((oldX + oldY) % 2 == 0) ? xw.White : xw.Black;
-  xw.fillRectangle((oldY + 1) * rectSize, oldX * rectSize, rectSize, rectSize, oldBackgroundColour);
+	// y and x swapped in fillRectangle and drawString arguments to display on correct draw
+  int oldBackgroundColour = ((oldX + oldY) % 2 == 0) ? xw.White : xw.Black; // Repainting the ood spot of the piece as blank
+  xw.fillRectangle((oldY + 1) * rectSize, oldX * rectSize, rectSize, rectSize, oldBackgroundColour); 
 	Type type = p.getType();
 	Colour pieceColour = p.getColour();
-	int pieceBackgroundColour = xw.PieceWhite;
+	int pieceBackgroundColour = xw.PieceWhite; // Default background of piece. 
 	int x = p.getX();
 	int y = p.getY();
 
   int backgroundColour = ((x + y) % 2 == 0) ? xw.White : xw.Black;
-	xw.fillRectangle((y + 1) * rectSize, x * rectSize, rectSize, rectSize, backgroundColour);
+	xw.fillRectangle((y + 1) * rectSize, x * rectSize, rectSize, rectSize, backgroundColour); 
+	// Find the correct char to print.
 	if (type != Type::Nullpiece) {
 		char c;
 		switch(type) {
@@ -52,7 +55,7 @@ void GraphicsDisplay::notify(const Piece &p, int oldX, int oldY) {
 		}
 		if (pieceColour == Colour::Black) {
 			c += 'a' - 'A'; // convert to lower case character.
-			pieceBackgroundColour = xw.PieceBlack;
+			pieceBackgroundColour = xw.PieceBlack; // Switch to correct background colour for piece. 
 		}
 		std::string s(1, c);
 		xw.fillRectangle((y + 1.25) * rectSize, (x + 0.25) * rectSize, rectSize * 0.5, rectSize * 0.5, pieceBackgroundColour);
