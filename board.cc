@@ -710,3 +710,7 @@ void Board::clear() {
     whiteKingNum = 0;
     blackKingNum = 0;
 }
+
+MoveResult Board::getLastMoveResult() const {
+    return lastMoveResult;
+}

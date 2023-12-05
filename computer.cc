@@ -67,9 +67,10 @@ vector<string> Computer::generateLevel2() {
                                 continue;
                             }
                             bool enemyChecked = board->isCheck(enemyColour);
+                            MoveResult result = board->getLastMoveResult();
                             board->undoMove(false);
 
-                            MoveResult result = piece->moveSuccess(newX, newY);
+                            // MoveResult result = piece->moveSuccess(newX, newY);
                             if (result != MoveResult::Failure) piece->setPosition(x, y);
                             if (enemyChecked || result == MoveResult::Capture) {
                                 capturesAndChecks.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
@@ -108,8 +109,9 @@ vector<string> Computer::generateLevel3() {
                             }
                             bool afterUnderAttack = board->isUnderAttack(newX, newY, playerColour);
                             bool enemyChecked = board->isCheck(enemyColour);
+                            MoveResult result = board->getLastMoveResult();
                             board->undoMove(false);
-                            MoveResult result = piece->moveSuccess(newX, newY);
+                            // MoveResult result = piece->moveSuccess(newX, newY);
                             if (result != MoveResult::Failure) piece->setPosition(x, y);
                             if (enemyChecked || result == MoveResult::Capture || (beforeUnderAttack && !afterUnderAttack)) {
                                 capturesChecksAndAvoids.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});

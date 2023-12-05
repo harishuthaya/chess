@@ -76,6 +76,7 @@ class Board {
         int getLastOldY() const;
         bool isOneKing() const;
         bool isPawnCorrect() const;
+        MoveResult getLastMoveResult() const;
         friend std::ostream &operator<<(std::ostream &out, const Board &b);
         bool simulateMove(int x, int y, int newX, int newY, Colour playerColour);
         bool undoMove(bool realMove);
