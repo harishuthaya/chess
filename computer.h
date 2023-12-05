@@ -8,7 +8,7 @@
 
 class Computer: public Player {
     int level;
-    Board &board;
+    Board *board;
 
     std::vector<std::string> generateLevel1();
     std::vector<std::string> generateLevel2();
@@ -16,7 +16,7 @@ class Computer: public Player {
     std::vector<std::string> generateLevel4();
 
     public: 
-        Computer(Colour colour, int level);
+        Computer(Colour colour, int level, Board *board);
         std::vector<std::string> getMove() const override;
         char getPromotion() const override;
 };

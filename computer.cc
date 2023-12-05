@@ -4,8 +4,8 @@
 #include <iostream>
 using namespace std;
 
-Computer::Computer(Colour colour, int level):
-    Player{colour}, level{level} {
+Computer::Computer(Colour colour, int level, Board *board):
+    Player{colour}, level{level}, board{board} {
 
 }
 
@@ -22,7 +22,7 @@ std::vector<std::string> Computer::generateLevel3() {
 }
 
 std::vector<std::string> Computer::generateLevel4() {
-    
+
 }
 
 vector<string> Computer::getMove() const {

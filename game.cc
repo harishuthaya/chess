@@ -23,13 +23,13 @@ void Game::addPlayer(string player, Colour colour) {
   if (player == "human") {
     players.emplace_back(make_unique<Human>(colour));
   } else if (player == "computer1") {
-    players.emplace_back(make_unique<Computer>(colour, 1));
+    players.emplace_back(make_unique<Computer>(colour, 1, chessboard));
   } else if (player == "computer2") {
-    players.emplace_back(make_unique<Computer>(colour, 2));
+    players.emplace_back(make_unique<Computer>(colour, 2, chessboard));
   } else if (player == "computer3") {
-    players.emplace_back(make_unique<Computer>(colour, 3));
+    players.emplace_back(make_unique<Computer>(colour, 3, chessboard));
   } else if (player == "computer4") {
-    players.emplace_back(make_unique<Computer>(colour, 4));
+    players.emplace_back(make_unique<Computer>(colour, 4, chessboard));
   }
 }
 
@@ -119,9 +119,6 @@ void Game::removePiece(string coords) {
 }
 
 void Game::init(string p1, string p2) {
-  this->addPlayer(p1, Colour::White);
-  this->addPlayer(p2, Colour::Black);
-  
   if (!td) {
     td = make_unique<TextDisplay>(8);
   }
@@ -132,6 +129,10 @@ void Game::init(string p1, string p2) {
     chessboard = make_unique<Board>(td.get(), gd.get());
     chessboard->init();
   }
+
+  this->addPlayer(p1, Colour::White);
+  this->addPlayer(p2, Colour::Black);
+  
   gameActive = true;
 }
 
