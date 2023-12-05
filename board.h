@@ -28,11 +28,10 @@ struct Move {
     bool lastCapturedHasMoveState;
     std::unique_ptr<Piece> lastCaptured;
 
-    Move(int lastOldX, int lastOldY, Piece* lastMove, MoveResult moveResult, bool lastMoveHasMoveState,
-    bool lastCapturedHasMoveState, std::unique_ptr<Piece>&& lastCaptured)
-        : lastOldX(lastOldX), lastOldY{lastOldY}, lastMove{lastMove}, moveResult(moveResult), 
-        lastMoveHasMoveState{lastMoveHasMoveState}, lastCapturedHasMoveState{lastCapturedHasMoveState},
-        lastCaptured{std::move(lastCaptured)} {}
+    Move(int lastOldX, int lastOldY, Piece* lastMove, MoveResult moveResult, bool lastMoveHasMoveState, bool lastCapturedHasMoveState, std::unique_ptr<Piece>&& lastCaptured): 
+        lastOldX(lastOldX), lastOldY{lastOldY}, lastMove{lastMove}, moveResult(moveResult), lastMoveHasMoveState{lastMoveHasMoveState}, lastCapturedHasMoveState{lastCapturedHasMoveState}, lastCaptured{std::move(lastCaptured)} {
+
+    }
 };
 
 
@@ -54,32 +53,57 @@ class Board {
     int whiteKingNum = 0;
     int blackKingNum = 0;
     std::stack<Move> movesHistory;
-
+    
     public:
         Board(TextDisplay *td, GraphicsDisplay *gd);
         void clear();
+        
+        // Initializes the board with the standard board setup
         void init();
         virtual ~Board() = default;
+
+        // Attempts to perform a move and return whether successful or not
         bool moveSuccess(int x, int y, int newX, int newY, Colour playerColour);
+
+        // Attemps to perform a move, including pawn promotion, and return whether successful or not
         bool moveSuccess(int x, int y, int newX, int newY, Colour playerColour, char c);
-        WinState getWinState();
-        void addPiece(char piece, int x, int y, int playerID);
+
+        // Add or remove pieces on the board
+        void addPiece(char piece, int x, int y);
         void removePiece(int x, int y);
-        int getSize() const;
+        
+        // Returns true if a piece is under attack, false otherwise
         bool isUnderAttack(int x, int y, Colour playerColour) const;
+
+        // Returns true if check, false otherwise
         bool isCheck(Colour playerColour) const;
+
+        // Returns true if checkmate, false otherwise
         bool isCheckmate(Colour playerColour);
+
+        // Returns true if stalemate, false otherwise
         bool isStalemate(Colour playerColour);
-        Piece* getPiece(int x, int y) const;
-        Piece* getLastMove() const;
-        int getLastOldX() const;
-        int getLastOldY() const;
+        
+        // Used for proper setup intialization, determine correct placement of pawns and number of kings
         bool isOneKing() const;
         bool isPawnCorrect() const;
-        MoveResult getLastMoveResult() const;
-        friend std::ostream &operator<<(std::ostream &out, const Board &b);
+        
+        // Simulate a move (dummy move)
         bool simulateMove(int x, int y, int newX, int newY, Colour playerColour);
+
+        // Undos previous move
         bool undoMove(bool realMove);
+
+        // Getters
+        MoveResult getLastMoveResult() const;
+        WinState getWinState();
+        int getLastOldX() const;
+        int getLastOldY() const;
+        Piece* getPiece(int x, int y) const;
+        Piece* getLastMove() const;
+        int getSize() const;
+
+        friend std::ostream &operator<<(std::ostream &out, const Board &b);
 };
 
 #endif

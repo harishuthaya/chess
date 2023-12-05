@@ -96,7 +96,7 @@ bool Game::verifySetup() const {
 
 void Game::addPiece(char piece, string coords) {
   vector<int> intCoords = convertCoords(coords);
-  chessboard->addPiece(piece, intCoords[0], intCoords[1], 1);
+  chessboard->addPiece(piece, intCoords[0], intCoords[1]);
 }
 
 void Game::undo() {

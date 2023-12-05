@@ -4,8 +4,8 @@ using namespace std;
 
 Board::Board(TextDisplay *td, GraphicsDisplay *gd): board{}, winState{WinState::InProgress}, td{td}, gd{gd}, whiteKing{nullptr}, 
     blackKing{nullptr}, lastMove{nullptr}, lastOldX{-1}, lastOldY{-1}, lastCaptured{nullptr}, 
-    lastMoveResult{MoveResult::Failure}, lastMoveHasMoveState{false}, lastCapturedHasMoveState{false}
-    {
+    lastMoveResult{MoveResult::Failure}, lastMoveHasMoveState{false}, lastCapturedHasMoveState{false} {
+    // Initializes an empty board
     board.resize(boardSize);
     for (int i = 0; i < boardSize; ++i) {
         board[i].resize(boardSize);
@@ -19,36 +19,41 @@ Board::Board(TextDisplay *td, GraphicsDisplay *gd): board{}, winState{WinState::
 }
 
 void Board::init() {
-        // Adds the black pieces
-    this->addPiece('r', 0, 0, 1);
-    this->addPiece('n', 0, 1, 1);
-    this->addPiece('b', 0, 2, 1);
-    this->addPiece('q', 0, 3, 1);
-    this->addPiece('k', 0, 4, 1);
-    this->addPiece('b', 0, 5, 1);
-    this->addPiece('n', 0, 6, 1);
-    this->addPiece('r', 0, 7, 1);
+    // Adds the black pieces
+    this->addPiece('r', 0, 0);
+    this->addPiece('n', 0, 1);
+    this->addPiece('b', 0, 2);
+    this->addPiece('q', 0, 3);
+    this->addPiece('k', 0, 4);
+    this->addPiece('b', 0, 5);
+    this->addPiece('n', 0, 6);
+    this->addPiece('r', 0, 7);
+
+    // Add black pawns
     for (int i = 0; i < boardSize; ++i) {
-        this->addPiece('p', 1, i, 1);
+        this->addPiece('p', 1, i);
     }
 
     // Adds the white pieces
-    this->addPiece('R', boardSize - 1, 0, 2);
-    this->addPiece('N', boardSize - 1, 1, 2);
-    this->addPiece('B', boardSize - 1, 2, 2);
-    this->addPiece('Q', boardSize - 1, 3, 2);
-    this->addPiece('K', boardSize - 1, 4, 2);
-    this->addPiece('B', boardSize - 1, 5, 2);
-    this->addPiece('N', boardSize - 1, 6, 2);
-    this->addPiece('R', boardSize - 1, 7, 2);
+    this->addPiece('R', boardSize - 1, 0);
+    this->addPiece('N', boardSize - 1, 1);
+    this->addPiece('B', boardSize - 1, 2);
+    this->addPiece('Q', boardSize - 1, 3);
+    this->addPiece('K', boardSize - 1, 4);
+    this->addPiece('B', boardSize - 1, 5);
+    this->addPiece('N', boardSize - 1, 6);
+    this->addPiece('R', boardSize - 1, 7);
+
+    // Add white pawns
     for (int i = 0; i < boardSize; ++i) {
-        this->addPiece('P', boardSize - 2, i, 2);
+        this->addPiece('P', boardSize - 2, i);
     }
 }
 
 bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, char c) {
     Colour pieceColour = board[x][y]->getColour();
-
+    
+    // Checks for invalid pawn promotions
     if (pieceColour != playerColour) {
         return false;
     }
@@ -68,22 +73,24 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
         return false;
     }
     
+    // Performs the move and makes sure it was successful
     bool success = moveSuccess(x, y, newX, newY, playerColour);
     if (!success) {
         return false;
     }
-
+    
+    // Updates previous move
     lastMove = board[newX][newY].get();
     lastOldX = x;
     lastOldY = y;
     lastMoveResult = MoveResult::Promote;
     if (board[newX][newY]->getType() == Type::Pawn) {
-        int playerId = (pieceColour == Colour::Black) ? 2 : 1;
-        this->addPiece(c, newX, newY, playerId);
+        this->addPiece(c, newX, newY);
     }
 
     Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
 
+    // Checks if game ended
     if(isCheckmate(Colour::White)) {
         cout << "Checkmate! Black wins!" << endl;
         winState = WinState::Player2Win;
@@ -98,6 +105,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
         return true;
     } 
 
+    // Checks if opponent is now in check
     if (isCheck(opponentColour)) {
         string s = (opponentColour == Colour::Black) ? "Black" : "White";
         cout << s + " is in check." << endl;
@@ -108,21 +116,24 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
 
 
 bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
+    // New move is within board boundaries
     if (newX < 0 || newX >= boardSize || newY < 0 || newY >= boardSize ||
         x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
         return false;
     }
 
+    // Piece moved to same spot
     if (x == newX && y == newY) {
         return false;
     }
 
+    // Piece is different colour than player's colour
     Colour pieceColour = board[x][y]->getColour();
-
     if (pieceColour != playerColour) {
         return false;
     }
 
+    // If last move successful, add it to history before making another move, if not, don't add it
     if (lastMoveResult != MoveResult::Failure) {
         movesHistory.push(Move(lastOldX, lastOldY, lastMove, lastMoveResult, lastMoveHasMoveState, lastCapturedHasMoveState, std::move(lastCaptured)));
         lastMoveResult = MoveResult::Failure;
@@ -135,6 +146,8 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         lastMoveResult = result;
         return false;
     }
+
+    // Update display if move is successful
     board[x][y]->notifyObservers(x, y);
 
     if (result == MoveResult::Castle) {
@@ -223,8 +236,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     lastOldY = y;
     lastMoveResult = MoveResult::Move;
 
-    Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
-
+    // Check if game ended
     if(isCheckmate(Colour::White)) {
         cout << "Checkmate! Black wins!" << endl;
         winState = WinState::Player2Win;
@@ -239,6 +251,8 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         return true;
     } 
 
+    // Checks if opponent is in check
+    Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
     if (isCheck(opponentColour)) {
         string s = (opponentColour == Colour::Black) ? "Black" : "White";
         cout << s + " is in check." << endl;
@@ -247,15 +261,14 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     return true;
 }
 
-WinState Board::getWinState() {
-    return this->winState;
-}
-
-void Board::addPiece(char piece, int x, int y, int playerID) {
+void Board::addPiece(char piece, int x, int y) {
+    // If piece is outside of board boundaries, don't add
     if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
         return;
     }
     board[x][y].reset();
+
+    // Add the piece
     switch(piece) {
         case 'r':
             board[x][y] = make_unique<Rook>(x, y, Colour::Black, *this);
@@ -301,17 +314,21 @@ void Board::addPiece(char piece, int x, int y, int playerID) {
             board[x][y] = make_unique<NullPiece>(x, y, *this);
             break;
     }
+    
+    // Attach observers to the piece
     board[x][y]->attach(td);
     board[x][y]->attach(gd);
 }
 
 void Board::removePiece(int x, int y) {
+    // If piece to be removed outside of baord boundaries, don't remove
     if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
         return;
     }
 
     Piece* piece = board[x][y].get();
 
+    // Reduce number of kings if necessary
     if (piece->getType() == Type::King) {
         if (piece->getColour() == Colour::White) {
             whiteKingNum--;
@@ -320,131 +337,12 @@ void Board::removePiece(int x, int y) {
         }
     }
     
+    // Swap piece to empty piece
     if (piece->getType() != Type::Nullpiece) {
         board[x][y] = make_unique<NullPiece>(x, y, *this);
         board[x][y]->attach(td);
         board[x][y]->attach(gd);
     }
-}
-
-int Board::getSize() const {
-    return boardSize;
-}
-
-bool Board::isUnderAttack(int x, int y, Colour playerColour) const {
-    for (int i = 0; i < boardSize; ++i) {
-        for (int j = 0; j < boardSize; ++j) {
-            Piece* piece = getPiece(i, j);
-            if (!piece->isEmpty() && piece->getColour() != playerColour) {
-                 // Check if the opponent's piece can legally move to the (x, y) position
-                if (piece->isValidMove(x, y)) {
-                        return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-bool Board::isCheck(Colour playerColour) const {
-    Piece* king = (playerColour == Colour::White) ? whiteKing : blackKing;
-    if (king) {
-        return isUnderAttack(king->getX(), king->getY(), playerColour);
-    }
-    return false;
-}
-
-bool Board::isCheckmate(Colour playerColour) {
-    if (!isCheck(playerColour)) {
-        return false;
-    }
-
-    for (int x = 0; x < boardSize; x++) {
-        for (int y = 0; y < boardSize; y++) {
-            Piece* piece = getPiece(x, y);
-            if (!piece->isEmpty() && piece->getColour() == playerColour) {
-                for (int newX = 0; newX < boardSize; newX++) {
-                    for (int newY = 0; newY < boardSize; newY++) {
-                        if (simulateMove(x, y, newX, newY, playerColour)) {
-                            if (!isCheck(playerColour)) {
-                                undoMove(false);
-                                return false;
-                            }
-                            undoMove(false);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
-bool Board::isStalemate(Colour playerColour) {
-    for (int x = 0; x < boardSize; x++) {
-        for (int y = 0; y < boardSize; y++) {
-            Piece* piece = getPiece(x, y);
-            if (!piece->isEmpty() && piece->getColour() == playerColour) {
-                for (int newX = 0; newX < boardSize; newX++) {
-                    for (int newY = 0; newY < boardSize; newY++) {
-                        if (simulateMove(x, y, newX, newY, playerColour)) {
-                            undoMove(false);
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
-
-Piece* Board::getPiece(int x, int y) const {
-    if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
-        return board[x][y].get();
-    }
-    return nullptr;
-}
-
-Piece* Board::getLastMove() const {
-    return lastMove;
-}
-
-int Board::getLastOldX() const {
-    return lastOldX;
-}
-
-int Board::getLastOldY() const {
-    return lastOldY;
-}
-
-
-bool Board::isOneKing() const {
-    if (whiteKingNum == 1 && blackKingNum == 1) {
-        return true;
-    } else {
-        cerr << "board must contain exactly one white king and one black king." << endl;
-        return false;
-    }
-}
-
-bool Board::isPawnCorrect() const {
-    for (int i = 0; i < boardSize; i++) {
-        if ((board[0][i]->getType() == Type::Pawn) || (board[boardSize - 1][i]->getType() == Type::Pawn)) {
-            cerr << "no pawns are allowed on the first and last row." << endl;
-            return false;
-        }
-    }
-    return true;
-
-}
-
-ostream &operator<<(ostream &out, const Board &b) {
-  out << *b.td;
-  return out;
 }
 
 bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) {
@@ -711,6 +609,128 @@ void Board::clear() {
     blackKingNum = 0;
 }
 
+bool Board::isUnderAttack(int x, int y, Colour playerColour) const {
+    for (int i = 0; i < boardSize; ++i) {
+        for (int j = 0; j < boardSize; ++j) {
+            Piece* piece = getPiece(i, j);
+            if (!piece->isEmpty() && piece->getColour() != playerColour) {
+                 // Check if the opponent's piece can legally move to the (x, y) position
+                if (piece->isValidMove(x, y)) {
+                        return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Board::isCheck(Colour playerColour) const {
+    Piece* king = (playerColour == Colour::White) ? whiteKing : blackKing;
+    if (king) {
+        return isUnderAttack(king->getX(), king->getY(), playerColour);
+    }
+    return false;
+}
+
+bool Board::isCheckmate(Colour playerColour) {
+    if (!isCheck(playerColour)) {
+        return false;
+    }
+
+    for (int x = 0; x < boardSize; x++) {
+        for (int y = 0; y < boardSize; y++) {
+            Piece* piece = getPiece(x, y);
+            if (!piece->isEmpty() && piece->getColour() == playerColour) {
+                for (int newX = 0; newX < boardSize; newX++) {
+                    for (int newY = 0; newY < boardSize; newY++) {
+                        if (simulateMove(x, y, newX, newY, playerColour)) {
+                            if (!isCheck(playerColour)) {
+                                undoMove(false);
+                                return false;
+                            }
+                            undoMove(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool Board::isStalemate(Colour playerColour) {
+    for (int x = 0; x < boardSize; x++) {
+        for (int y = 0; y < boardSize; y++) {
+            Piece* piece = getPiece(x, y);
+            if (!piece->isEmpty() && piece->getColour() == playerColour) {
+                for (int newX = 0; newX < boardSize; newX++) {
+                    for (int newY = 0; newY < boardSize; newY++) {
+                        if (simulateMove(x, y, newX, newY, playerColour)) {
+                            undoMove(false);
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool Board::isOneKing() const {
+    if (whiteKingNum == 1 && blackKingNum == 1) {
+        return true;
+    } else {
+        cerr << "board must contain exactly one white king and one black king." << endl;
+        return false;
+    }
+}
+
+bool Board::isPawnCorrect() const {
+    for (int i = 0; i < boardSize; i++) {
+        if ((board[0][i]->getType() == Type::Pawn) || (board[boardSize - 1][i]->getType() == Type::Pawn)) {
+            cerr << "no pawns are allowed on the first and last row." << endl;
+            return false;
+        }
+    }
+    return true;
+
+}
+
+Piece* Board::getPiece(int x, int y) const {
+    if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
+        return board[x][y].get();
+    }
+    return nullptr;
+}
+
+Piece* Board::getLastMove() const {
+    return lastMove;
+}
+
+int Board::getLastOldX() const {
+    return lastOldX;
+}
+
+int Board::getLastOldY() const {
+    return lastOldY;
+}
+
+WinState Board::getWinState() {
+    return this->winState;
+}
+
+int Board::getSize() const {
+    return boardSize;
+}
+
 MoveResult Board::getLastMoveResult() const {
     return lastMoveResult;
+}
+
+ostream &operator<<(ostream &out, const Board &b) {
+  out << *b.td;
+  return out;
 }
