@@ -18,11 +18,8 @@ Colour Piece::getColour() const {
 }
 
 void Piece::setPosition(int newX, int newY) {
-    int oldX = x;
-    int oldY = y;
     x = newX;
     y = newY;
-    // notifyObservers(oldX, oldY);
 }
 
 bool Piece::isEmpty() const {
