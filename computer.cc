@@ -50,8 +50,18 @@ vector<string> Computer::generateLevel4() {
 
 }
 
-vector<string> Computer::getMove() const {
-
+vector<string> Computer::getMove() {
+    switch (level) {
+        case 1:
+            return generateLevel1();
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+    }
 }
 
 char Computer::getPromotion() const {

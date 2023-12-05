@@ -8,7 +8,7 @@
 class Human: public Player {
     public:
         Human(Colour colour);
-        std::vector<std::string> getMove() const override;
+        std::vector<std::string> getMove() override;
         char getPromotion() const override;
 };
 
