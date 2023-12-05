@@ -17,7 +17,7 @@ class Computer: public Player {
     std::vector<std::string> generateLevel4();
     std::vector<std::vector<std::string>> generateAllMoves();
     int scoreMove(int startX, int startY, int endX, int endY);
-    int getPieceValue(Piece* piece);
+    int getPieceValue(Type pieceType);
     int evaluatePositionalAdvantage(int endX, int endY);
 
 

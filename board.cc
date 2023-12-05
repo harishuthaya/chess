@@ -234,7 +234,11 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
     lastMove = board[newX][newY].get();
     lastOldX = x;
     lastOldY = y;
-    lastMoveResult = MoveResult::Move;
+    if (lastCaptured && lastCaptured->getType() != Type::Nullpiece) {
+        lastMoveResult = MoveResult::Capture;
+    } else {
+        lastMoveResult = MoveResult::Move;
+    }
 
     // Check if game ended
     if(isCheckmate(Colour::White)) {
@@ -447,7 +451,11 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
     lastMove = board[newX][newY].get();
     lastOldX = x;
     lastOldY = y;
-    lastMoveResult = MoveResult::Move;
+    if (lastCaptured && lastCaptured->getType() != Type::Nullpiece) {
+        lastMoveResult = MoveResult::Capture;
+    } else {
+        lastMoveResult = MoveResult::Move;
+    }
     return true;
 }
 
@@ -479,7 +487,7 @@ bool Board::undoMove(bool realMove) {
         return true;
     }
 
-    if (lastMoveResult == MoveResult::Move) {
+    if ((lastMoveResult == MoveResult::Move) || (lastMoveResult == MoveResult::Capture)) {
         int newX = lastMove->getX();
         int newY = lastMove->getY();
         board[lastOldX][lastOldY] = std::move(board[newX][newY]);
