@@ -174,28 +174,35 @@ int Computer::scoreMove(int startX, int startY, int endX, int endY) {
     }
 
     MoveResult result = board->getLastMoveResult();
+
+    if (!board->isUnderAttack(endX, endY, getColour())) {
+        score += score + 100;
+    }
+
     // Captures, prioritize by piece value
     if (result == MoveResult::EnPassant) {
         score += 20;
+        board->undoMove(false);
+        return score;
     }
 
     if (result == MoveResult::Promote) {
         score += 100;
+        board->undoMove(false);
+        return score;
     }
 
     if (result == MoveResult::Castle) {
         score += 50;
+        board->undoMove(false);
+        return score;
     }
 
     if (result == MoveResult::Capture) {
-        Piece* capturedPiece = board->getPiece(endX, endY);
-        score += getPieceValue(capturedPiece);
-    } else {
-        score += 0; // regular move
-    }
-
-    if (!board->isUnderAttack(endX, endY, getColour())) {
-        score += score + 100;
+        board->undoMove(false);
+        Piece* piece = board->getPiece(endX, endY);
+        score += getPieceValue(piece->getType());
+        return score;
     }
 
     board->undoMove(false);
@@ -203,12 +210,8 @@ int Computer::scoreMove(int startX, int startY, int endX, int endY) {
     return score;
 }
 
-int Computer::getPieceValue(Piece* piece) {
-    if (piece == nullptr || piece->isEmpty()) {
-        return 0; // No value for empty squares or null pointers
-    }
-
-    switch (piece->getType()) {
+int Computer::getPieceValue(Type pieceType) {
+    switch (pieceType) {
         case Type::Pawn:
             return 10;
         case Type::Knight:
