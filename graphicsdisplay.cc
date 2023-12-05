@@ -20,6 +20,7 @@ void GraphicsDisplay::notify(const Piece &p, int oldX, int oldY) {
   xw.fillRectangle((oldY + 1) * rectSize, oldX * rectSize, rectSize, rectSize, oldBackgroundColour);
 	Type type = p.getType();
 	Colour pieceColour = p.getColour();
+	int pieceBackgroundColour = xw.PieceWhite;
 	int x = p.getX();
 	int y = p.getY();
 
@@ -51,9 +52,10 @@ void GraphicsDisplay::notify(const Piece &p, int oldX, int oldY) {
 		}
 		if (pieceColour == Colour::Black) {
 			c += 'a' - 'A'; // convert to lower case character.
+			pieceBackgroundColour = xw.PieceBlack;
 		}
 		std::string s(1, c);
-		xw.fillRectangle((y + 1.25) * rectSize, (x + 0.25) * rectSize, rectSize * 0.5, rectSize * 0.5, xw.Gray);
+		xw.fillRectangle((y + 1.25) * rectSize, (x + 0.25) * rectSize, rectSize * 0.5, rectSize * 0.5, pieceBackgroundColour);
 		xw.drawString((y + 1.5) * rectSize, (x + 0.5) * rectSize, s);
 	}
 }
