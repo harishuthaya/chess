@@ -88,6 +88,7 @@ vector<string> Computer::generateLevel3() {
         for (int y = 0; y < size; ++y) {
             Piece* piece = board->getPiece(x, y);
             if (!piece->isEmpty() && piece->getColour() == playerColour) {
+                bool beforeUnderAttack = board->isUnderAttack(x, y, playerColour);
                 for (int newX = 0; newX < size; ++newX) {
                     for (int newY = 0; newY < size; ++newY) {
                         if (board->simulateMove(x, y, newX, newY, playerColour)) {
@@ -95,35 +96,12 @@ vector<string> Computer::generateLevel3() {
                                 board->undoMove(false);
                                 continue;
                             }
+                            bool afterUnderAttack = board->isUnderAttack(newX, newY, playerColour);
                             bool enemyChecked = board->isCheck(enemyColour);
-                            bool enemyCapturePossible = false;
-                            for (int enemyX = 0; enemyX < size && !enemyCapturePossible; ++enemyX) {
-                                for (int enemyY = 0; enemyY < size && !enemyCapturePossible; ++enemyY) {
-                                    Piece* enemyPiece = board->getPiece(enemyX, enemyY);
-                                    if (!enemyPiece->isEmpty() && enemyPiece->getColour() == enemyColour) {
-                                        for (int newEnemyX = 0; newEnemyX < size && !enemyCapturePossible; ++newEnemyX) {
-                                            for (int newEnemyY = 0; newEnemyY < size && !enemyCapturePossible; ++newEnemyY) {
-                                                if (board->simulateMove(enemyX, enemyY, newEnemyX, newEnemyY, enemyColour)) {
-                                                    if (board->isCheck(enemyColour)) {
-                                                        board->undoMove(false);
-                                                        continue;
-                                                    }
-                                                    board->undoMove(false);
-                                                    MoveResult result = enemyPiece->moveSuccess(newEnemyX, newEnemyY);
-                                                    if (result != MoveResult::Failure) enemyPiece->setPosition(enemyX, enemyY);
-                                                    if(result == MoveResult::Capture) {
-                                                        enemyCapturePossible = true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
                             board->undoMove(false);
                             MoveResult result = piece->moveSuccess(newX, newY);
                             if (result != MoveResult::Failure) piece->setPosition(x, y);
-                            if (enemyChecked || result == MoveResult::Capture || enemyCapturePossible) {
+                            if (enemyChecked || result == MoveResult::Capture || (beforeUnderAttack && !afterUnderAttack)) {
                                 capturesChecksAndAvoids.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
                             } else {
                                 otherLegalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
