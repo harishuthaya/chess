@@ -5,6 +5,7 @@
 #include "game.h"
 #include "piece.h"
 #include "human.h"
+#include "computer.h"
 
 using namespace std;
 
@@ -22,13 +23,13 @@ void Game::addPlayer(string player, Colour colour) {
   if (player == "human") {
     players.emplace_back(make_unique<Human>(colour));
   } else if (player == "computer1") {
-    
+    players.emplace_back(make_unique<Computer>(colour, 1));
   } else if (player == "computer2") {
-
+    players.emplace_back(make_unique<Computer>(colour, 2));
   } else if (player == "computer3") {
-
+    players.emplace_back(make_unique<Computer>(colour, 3));
   } else if (player == "computer4") {
-
+    players.emplace_back(make_unique<Computer>(colour, 4));
   }
 }
 
