@@ -51,6 +51,8 @@
         "iostream": "cpp",
         "cstring": "cpp",
         "cwctype": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "list": "cpp",
+        "map": "cpp"
     }
 }
