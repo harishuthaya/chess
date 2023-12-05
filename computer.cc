@@ -56,7 +56,9 @@ vector<string> Computer::generateLevel2() {
     vector<vector<string>> legalMoves = generateAllMoves();
     Colour playerColour = getColour();
     Colour enemyColour = (playerColour == Colour::White) ? Colour::Black : Colour::White;
-
+    
+    // Iterate through all legal moves. If the move checks enemy or captures enemy piece, emplace to back of special list
+    // All other moves go to a second list.
     for (const auto& move : legalMoves) {
         vector<int> start = convert(move[0]);
         vector<int> end = convert(move[1]);
@@ -74,34 +76,8 @@ vector<string> Computer::generateLevel2() {
             }
         }
     }
-    // int size = board->getSize();
-    // for (int x = 0; x < size; ++x) {
-    //     for (int y = 0; y < size; ++y) {
-    //         Piece* piece = board->getPiece(x, y);
-    //         if (!piece->isEmpty() && piece->getColour() == playerColour) {
-    //             for (int newX = 0; newX < size; ++newX) {
-    //                 for (int newY = 0; newY < size; ++newY) {
-    //                     if (board->simulateMove(x, y, newX, newY, playerColour)) {
-    //                         if (board->isCheck(playerColour)) {
-    //                             board->undoMove(false);
-    //                             continue;
-    //                         }
-    //                         bool enemyChecked = board->isCheck(enemyColour);
-    //                         MoveResult result = board->getLastMoveResult();
-    //                         board->undoMove(false);
 
-    //                         if (result != MoveResult::Failure) piece->setPosition(x, y);
-    //                         if (enemyChecked || result == MoveResult::Capture) {
-    //                             capturesAndChecks.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
-    //                         } else {
-    //                             otherLegalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
-    //                         }
-    //                     } 
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    // Pick randomly from the special list and return it, otherwise return random from second list. 
     if (capturesAndChecks.size() > 0) return capturesAndChecks[rand() % capturesAndChecks.size()];
     return otherLegalMoves[rand() % otherLegalMoves.size()];
 
@@ -114,8 +90,11 @@ vector<string> Computer::generateLevel3() {
 
     Colour playerColour = getColour();
     Colour enemyColour = (playerColour == Colour::White) ? Colour::Black : Colour::White;
-
-        for (const auto& move : legalMoves) {
+    
+    // Iterate through all legal moves. If the move checks enemy, captures enemy piece, or the piece was previously
+    // liable for an enemy capture but no longer is, emplace to back of special list
+    // All other moves go to a second list.
+    for (const auto& move : legalMoves) {
         vector<int> start = convert(move[0]);
         vector<int> end = convert(move[1]);
         Piece* piece = board->getPiece(start[0], start[1]);
@@ -134,35 +113,7 @@ vector<string> Computer::generateLevel3() {
         }
     }
 
-    // int size = board->getSize();
-    // for (int x = 0; x < size; ++x) {
-    //     for (int y = 0; y < size; ++y) {
-    //         Piece* piece = board->getPiece(x, y);
-    //         if (!piece->isEmpty() && piece->getColour() == playerColour) {
-    //             bool beforeUnderAttack = board->isUnderAttack(x, y, playerColour);
-    //             for (int newX = 0; newX < size; ++newX) {
-    //                 for (int newY = 0; newY < size; ++newY) {
-    //                     if (board->simulateMove(x, y, newX, newY, playerColour)) {
-    //                         if (board->isCheck(playerColour)) {
-    //                             board->undoMove(false);
-    //                             continue;
-    //                         }
-    //                         bool afterUnderAttack = board->isUnderAttack(newX, newY, playerColour);
-    //                         bool enemyChecked = board->isCheck(enemyColour);
-    //                         MoveResult result = board->getLastMoveResult();
-    //                         board->undoMove(false);
-    //                         if (result != MoveResult::Failure) piece->setPosition(x, y);
-    //                         if (enemyChecked || result == MoveResult::Capture || (beforeUnderAttack && !afterUnderAttack)) {
-    //                             capturesChecksAndAvoids.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
-    //                         } else {
-    //                             otherLegalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
-    //                         }
-    //                     } 
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    // Pick randomly from the special list and return it, otherwise return random from second list. 
     if (capturesChecksAndAvoids.size() > 0) return capturesChecksAndAvoids[rand() % capturesChecksAndAvoids.size()];
     return otherLegalMoves[rand() % otherLegalMoves.size()];
 }

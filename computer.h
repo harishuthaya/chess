@@ -15,12 +15,12 @@ class Computer: public Player {
     std::vector<int> convert(const std::string& coords) const;
     
     // 4 levels of computer for generating moves
-    std::vector<std::string> generateLevel1();
-    std::vector<std::string> generateLevel2();
-    std::vector<std::string> generateLevel3();
-    std::vector<std::string> generateLevel4();
+    std::vector<std::string> generateLevel1(); // Returns a random valid move
+    std::vector<std::string> generateLevel2(); // Prefers capturing moves and checks over other moves
+    std::vector<std::string> generateLevel3(); // Prefers avoiding capture, capturing moves, and checks.
+    std::vector<std::string> generateLevel4(); // Uses a score system and randomly picks from a list of best possible moves. 
     
-    // Returns a list of all moves
+    // Returns a list of all valid moves
     std::vector<std::vector<std::string>> generateAllMoves();
 
     // Returns the score for a move calculated based on its effectiveness
