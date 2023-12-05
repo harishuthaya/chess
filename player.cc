@@ -1,16 +1,8 @@
 #include "piece.h"
 #include "player.h"
 
-Player::Player(Colour colour): colour{colour}, score{0} {
+Player::Player(Colour colour): colour{colour} {
     
-}
-
-float Player::getScore() const {
-    return score;
-}
-
-void Player::incrementScore(float i) {
-    score += i;
 }
 
 Colour Player::getColour() const {

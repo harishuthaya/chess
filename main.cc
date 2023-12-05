@@ -9,7 +9,11 @@ int main()
 {   
     Xwindow xw{};
     string cmd;
-    Game game{xw};
+
+    float player1 = 0;
+    float player2 = 0;
+    Game game{xw, player1, player2};
+
     while (true) {
         cin >> cmd;
         if (cin.eof()) break;
@@ -58,10 +62,9 @@ int main()
         }
     }
 
-    vector<float> scores = game.getScores();
     std::cout << "Final Score:" << endl;
-    std::cout << "White: " << scores[0] << endl;
-    std::cout << "Black: " << scores[1] << endl;
+    std::cout << "White: " << player1 << endl;
+    std::cout << "Black: " << player2 << endl;
 }
 
 

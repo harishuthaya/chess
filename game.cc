@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Game::Game(Xwindow &xw): turn{Colour::White}, gameActive{false}, xw{xw} {
+Game::Game(Xwindow &xw, float &whiteScore, float &blackScore): turn{Colour::White}, gameActive{false}, xw{xw}, whiteScore{whiteScore}, blackScore{blackScore} {
 
 }
 
@@ -61,18 +61,18 @@ void Game::move(Colour curTurn) {
     }
     WinState currentState = chessboard->getWinState();
     if (currentState == WinState::Player1Win) {
-      players.at(0)->incrementScore(1);
+      whiteScore += 1;
       gameActive = false;
       setupUsed = false;
     }
     else if (currentState == WinState::Player2Win) {
-      players.at(1)->incrementScore(1);
+      blackScore += 1;
       gameActive = false;
       setupUsed = false;
     }
     else if (currentState == WinState::Tie) {
-      players.at(0)->incrementScore(0.5);
-      players.at(1)->incrementScore(0.5);
+      whiteScore += 0.5;
+      blackScore += 0.5;
       gameActive = false;
       setupUsed = false;
     }
@@ -80,10 +80,10 @@ void Game::move(Colour curTurn) {
 
 void Game::resign(Colour curTurn) {
     if (curTurn == Colour::White) {
-        players[1]->incrementScore(1);
+        blackScore += 1;
         cout << "Black wins!" << endl;
     } else {
-        players[0]->incrementScore(1);
+        whiteScore += 1;
         cout << "White wins!" << endl;
     }
     gameActive = false;
@@ -146,13 +146,6 @@ void Game::setTurn(string colour) {
 
 Colour Game::getTurn() const {
     return this->turn;
-}
-
-vector<float> Game::getScores() const {
-    if (players.empty() || players[0] == nullptr || players[1] == nullptr) {
-      return vector<float>{0, 0};
-    }
-    return vector<float>{players[0]->getScore(), players[1]->getScore()};
 }
 
 bool Game::isGameActive() const {

@@ -22,10 +22,12 @@ class Game {
     bool gameActive;
     bool setupUsed;
     Xwindow &xw;
+    float &whiteScore;
+    float &blackScore;
 
     std::vector<int> convertCoords(std::string coords) const;
     public:
-        Game(Xwindow &xw);
+        Game(Xwindow &xw, float &whiteScore, float &blackScore);
         void init(std::string p1, std::string p2);
         void addPlayer(std::string player, Colour colour);
         void addPiece(char piece, std::string coords);
@@ -35,7 +37,6 @@ class Game {
         bool verifySetup() const;
         Colour getTurn() const;
         void setTurn(std::string colour);
-        std::vector<float> getScores() const;
         bool isGameActive() const;
         friend std::ostream &operator<<(std::ostream &out, const Game &g);
         void undo();
