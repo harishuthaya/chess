@@ -22,19 +22,23 @@ vector<int> Game::convertCoords(string coords) const {
 void Game::addPlayer(string player, Colour colour) {
   if (player == "human") {
     players.emplace_back(make_unique<Human>(colour));
-  } else if (player == "computer1") {
+  } else if (player == "computer[1]") {
     players.emplace_back(make_unique<Computer>(colour, 1, chessboard.get()));
-  } else if (player == "computer2") {
+  } else if (player == "computer[2]") {
     players.emplace_back(make_unique<Computer>(colour, 2, chessboard.get()));
-  } else if (player == "computer3") {
+  } else if (player == "computer[3]") {
     players.emplace_back(make_unique<Computer>(colour, 3, chessboard.get()));
-  } else if (player == "computer4") {
+  } else if (player == "computer[4]") {
     players.emplace_back(make_unique<Computer>(colour, 4, chessboard.get()));
   }
 }
 
 void Game::move(Colour curTurn) {
     vector<string> move = (turn == Colour::White) ? players[0]->getMove() : players[1]->getMove();
+    if (move.size() != 2 || move[0].length() != 2 || move[1].length() != 2) {
+      return;
+    }
+    
     vector<int> oldCoords = convertCoords(move[0]);
     vector<int> newCoords = convertCoords(move[1]);
     Piece* isPawn = chessboard->getPiece(oldCoords[0], oldCoords[1]);
@@ -91,7 +95,12 @@ void Game::resign(Colour curTurn) {
 }
 
 bool Game::verifySetup() const {
-    return this->chessboard->isOneKing() && this->chessboard->isPawnCorrect() && !this->chessboard->isCheck(Colour::White) && !this->chessboard->isCheck(Colour::Black);
+  if (this->chessboard->isCheck(Colour::White) || this->chessboard->isCheck(Colour::Black)) {
+    cerr << "neither king must be in check" << endl;
+    return false;
+  }
+
+  return this->chessboard->isOneKing() && this->chessboard->isPawnCorrect();
 }
 
 void Game::addPiece(char piece, string coords) {

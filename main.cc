@@ -27,8 +27,11 @@ int main(int argc, char *argv[])
         if (cmd == "game" && !game.isGameActive()) {
             string p1, p2;
             cin >> p1 >> p2;
-            game.init(p1, p2);
-            std::cout << game;
+            if ((p1 == "human" || p1 == "computer[1]" || p1 == "computer[2]" || p1 == "computer[3]" || p1 == "computer[4]") &&
+                (p2 == "human" || p2 == "computer[1]" || p2 == "computer[2]" || p2 == "computer[3]" || p2 == "computer[4]")) {
+                game.init(p1, p2);
+                std::cout << game;
+            }
         } else if (cmd == "resign" && game.isGameActive()) {
             game.resign(game.getTurn());
         } else if (cmd == "move" && game.isGameActive()) {
