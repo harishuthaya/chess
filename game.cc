@@ -13,6 +13,7 @@ Game::Game(Xwindow &xw, float &whiteScore, float &blackScore): turn{Colour::Whit
 
 }
 
+// Converts algebraic coordinates (e.g., "a1", "h8") to array indices
 vector<int> Game::convertCoords(string coords) const {
     int col = coords[0] - 'a';
     int row = chessboard->getSize() - (coords[1] - '0');
@@ -43,6 +44,7 @@ void Game::move(Colour curTurn) {
     vector<int> newCoords = convertCoords(move[1]);
     Piece* isPawn = chessboard->getPiece(oldCoords[0], oldCoords[1]);
     bool moveSuccess;
+    // Check for pawn promotion
     if (isPawn->getType() == Type::Pawn) 
     {
       if (((curTurn == Colour::White) && (newCoords[0] == 0))||
@@ -56,6 +58,8 @@ void Game::move(Colour curTurn) {
     } else {
       moveSuccess = chessboard->moveSuccess(oldCoords[0], oldCoords[1], newCoords[0], newCoords[1], curTurn);
     }
+
+    // Update player turn if move is success
     if (moveSuccess) {
         if (curTurn == Colour::White) {
             turn = Colour::Black;
@@ -64,6 +68,8 @@ void Game::move(Colour curTurn) {
         }
     }
     WinState currentState = chessboard->getWinState();
+
+    // Update player score
     if (currentState == WinState::Player1Win) {
       whiteScore += 1;
       gameActive = false;
@@ -99,7 +105,8 @@ bool Game::verifySetup() const {
     cerr << "neither king must be in check" << endl;
     return false;
   }
-
+  
+  // check if exactly one king on each side and no pawns on first or last row
   return this->chessboard->isOneKing() && this->chessboard->isPawnCorrect();
 }
 

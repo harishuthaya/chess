@@ -7,10 +7,13 @@ Queen::Queen(int x, int y, Colour playerColour, const Board& board)
     : Piece(x, y, playerColour, board, Type::Queen) {}
 
 MoveResult Queen::moveSuccess(int newX, int newY) {
+    // Check if the move is valid for a Queen
     if (!isValidMove(newX, newY)) {
         return MoveResult::Failure;
     }
     Piece* targetPiece = board.getPiece(newX, newY);
+
+    // If the target piece is an enemy, capture it
     if (!targetPiece->isEmpty() && targetPiece->getColour() != this->getColour()) {
         setPosition(newX, newY);
         return MoveResult::Capture;
@@ -24,6 +27,7 @@ bool Queen::isValidMove(int newX, int newY) const {
     int deltaX = newX - getX();
     int deltaY = newY - getY();
 
+    // Check if the move is horizontal/vertical or diagonal
     bool isHorizontalVertical = (deltaX == 0 || deltaY == 0);
     bool isDiagonal = (abs(deltaX) == abs(deltaY));
     if (!isHorizontalVertical && !isDiagonal) {
@@ -36,6 +40,7 @@ bool Queen::isValidMove(int newX, int newY) const {
     int currentX = getX() + stepX;
     int currentY = getY() + stepY;
 
+    // Check for blocking pieces
     while (currentX != newX || currentY != newY) {
         if (!board.getPiece(currentX, currentY)->isEmpty()) {
             return false;
@@ -44,6 +49,8 @@ bool Queen::isValidMove(int newX, int newY) const {
         currentY += stepY;
     }
     Piece* destinationPiece = board.getPiece(newX, newY);
+    
+    // Move is valid if the destination is empty or contains an enemy piece
     if (destinationPiece->isEmpty() || destinationPiece->getColour() != this->getColour()) {    
         return true;
     }

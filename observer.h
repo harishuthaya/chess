@@ -5,6 +5,7 @@ class Piece;
 
 class Observer {
     public:
+        // virtual method called by subjects to notify observers
         virtual void notify(const Piece &p, int oldX, int oldY) = 0;
         virtual ~Observer() = default;
 };

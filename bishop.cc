@@ -7,10 +7,13 @@ Bishop::Bishop(int x, int y, Colour playerColour, const Board& board)
     : Piece(x, y, playerColour, board, Type::Bishop) {}
 
 MoveResult Bishop::moveSuccess(int newX, int newY) {
+    // Check if mvoe is valid
     if (!isValidMove(newX, newY)) {
         return MoveResult::Failure;
     }
+
     Piece* targetPiece = board.getPiece(newX, newY);
+    // Check if move is a capture move
     if (!targetPiece->isEmpty() && targetPiece->getColour() != this->getColour()) {
         setPosition(newX, newY);
         return MoveResult::Capture;

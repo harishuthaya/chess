@@ -12,6 +12,8 @@ MoveResult Pawn::moveSuccess(int newX, int newY) {
     int forwardDirection = (getColour() == Colour::White) ? -1 : 1;
     int deltaX = newX - getX();
     int deltaY = newY - getY();
+
+    // Invalid move, return failure.
     if (!isValidMove(newX, newY)) {
         return MoveResult::Failure;
     }
@@ -21,14 +23,17 @@ MoveResult Pawn::moveSuccess(int newX, int newY) {
 
 
     if (deltaX == forwardDirection && abs(deltaY) == 1) {
+        // Attempting to move diagonally
         Piece* targetPiece = board.getPiece(newX, newY);
         if (!targetPiece->isEmpty()) {
+            // Capturing a piece.
             return MoveResult::Capture;
         } else {
+            // En passant move.
             return MoveResult::EnPassant;
         }
     }
-
+    
     return MoveResult::Move;
 }
 

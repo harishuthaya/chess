@@ -43,16 +43,16 @@ class Board {
     GraphicsDisplay *gd;
     Piece* whiteKing;
     Piece* blackKing;
-    Piece* lastMove;
-    int lastOldX;
-    int lastOldY;
-    std::unique_ptr<Piece> lastCaptured;
-    MoveResult lastMoveResult;
-    bool lastMoveHasMoveState;
-    bool lastCapturedHasMoveState;
+    Piece* lastMove;            // last piece moved
+    int lastOldX;               // last move's old X coordinate
+    int lastOldY;               // last move's old Y coorindate
+    std::unique_ptr<Piece> lastCaptured;  // last piece cpatured
+    MoveResult lastMoveResult;          // last moveResult
+    bool lastMoveHasMoveState;          // last moved piece's previous move state
+    bool lastCapturedHasMoveState;      // last captured piece's previous move state
     int whiteKingNum = 0;
     int blackKingNum = 0;
-    std::stack<Move> movesHistory;
+    std::stack<Move> movesHistory;      // history of moves
     
     public:
         Board(TextDisplay *td, GraphicsDisplay *gd);

@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
 
     bool undoEnabled = false;
     string flag = argc > 1 ? argv[argc - 1] : "";
+    // enabling enhancements
     if (flag == "-enablebonus") {
         undoEnabled = true;
     }

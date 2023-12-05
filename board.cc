@@ -373,6 +373,7 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
         return false;
     }
 
+    // update move history
     if (lastMoveResult != MoveResult::Failure) {
         movesHistory.push(Move(lastOldX, lastOldY, lastMove, lastMoveResult, lastMoveHasMoveState, lastCapturedHasMoveState, std::move(lastCaptured)));
         lastMoveResult = MoveResult::Failure;
@@ -385,7 +386,6 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
         lastMoveResult = result;
         return false;
     }
-    // board[newX][newY]->notifyObservers(x, y);
 
     if (result == MoveResult::Castle) {
         int rookY = (newY > y) ? boardSize - 1 : 0;
@@ -394,6 +394,8 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
         board[newX][newY] = std::move(board[x][y]);
         board[x][y] = make_unique<NullPiece>(x, y, *this);
         board[x][rookY] = make_unique<NullPiece>(x, rookY, *this);
+
+        // illegal move if put own king in check
         if (isCheck(pieceColour)) {
             board[x][y] = std::move(board[newX][newY]);
             board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
@@ -406,6 +408,8 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
             lastMoveResult = MoveResult::Failure;
             return false;
         }
+
+        // update move history fields
         lastCaptured = nullptr;
         lastMoveResult = MoveResult::Castle;
         lastMove = board[newX][newY].get();
@@ -421,19 +425,17 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
         board[capturedPawnX][capturedPawnY] = make_unique<NullPiece>(capturedPawnX, capturedPawnY, *this);
         board[newX][newY] = std::move(board[x][y]);
         board[x][y] = make_unique<NullPiece>(x, y, *this);
+
+        // illegal move to put own king in check
         if (isCheck(pieceColour)) {
             board[x][y] = std::move(board[newX][newY]);
             board[x][y]->setPosition(x, y);
             board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
             board[capturedPawnX][capturedPawnY] = std::move(tempDest);
             lastMoveResult = MoveResult::Failure;
-            // board[newX][newY]->attach(td);
-            // board[capturedPawnX][capturedPawnY]->attach(td);
             return false;
         }
-
-        // board[capturedPawnX][capturedPawnY]->attach(td);
-        // board[x][y]->attach(td);
+        // update move history fields
         lastCaptured = std::move(tempDest);
         lastMove = board[newX][newY].get();
         lastOldX = x;
@@ -445,16 +447,16 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
     auto tempDest = std::move(board[newX][newY]);
     board[newX][newY] = std::move(board[x][y]);
     board[x][y] = make_unique<NullPiece>(x, y, *this);
+    // illagal move to put own king in check
     if (isCheck(pieceColour)) {
         board[newX][newY]->setPosition(x, y);
         board[x][y] = std::move(board[newX][newY]);
         board[newX][newY] = std::move(tempDest);
         lastMoveResult = MoveResult::Failure;
-        // board[newX][newY]->attach(td);
         return false;
     }
     
-    // board[x][y]->attach(td);
+    // update move history fields
     lastCaptured = std::move(tempDest);
     lastMove = board[newX][newY].get();
     lastOldX = x;
@@ -480,6 +482,7 @@ bool Board::undoMove(bool realMove) {
         if (realMove) board[newX][newY]->notifyObservers(newX, newY); 
         board[lastOldX][lastOldY]->setHasMoved(lastMoveHasMoveState);
         board[newX][newY]->setHasMoved(lastCapturedHasMoveState);
+        // update last move if movehistory isn't empty
         if (!movesHistory.empty()) {
             lastOldX = movesHistory.top().lastOldX;
             lastOldY = movesHistory.top().lastOldY;
@@ -506,6 +509,7 @@ bool Board::undoMove(bool realMove) {
         if (realMove) board[newX][newY]->notifyObservers(newX, newY);
         board[lastOldX][lastOldY]->setHasMoved(lastMoveHasMoveState);
         board[newX][newY]->setHasMoved(lastCapturedHasMoveState);
+        // update last move if movehistory isn't empty
         if (!movesHistory.empty()) {
             lastOldX = movesHistory.top().lastOldX;
             lastOldY = movesHistory.top().lastOldY;
@@ -538,6 +542,7 @@ bool Board::undoMove(bool realMove) {
         board[capturedPawnX][capturedPawnY]->setPosition(capturedPawnX, capturedPawnY);
         if (realMove)board[capturedPawnX][capturedPawnY]->notifyObservers(capturedPawnX, capturedPawnY);
         board[capturedPawnX][capturedPawnY]->setHasMoved(lastCapturedHasMoveState);
+        // update last move if movehistory isn't empty
         if (!movesHistory.empty()) {
             lastOldX = movesHistory.top().lastOldX;
             lastOldY = movesHistory.top().lastOldY;
@@ -567,6 +572,7 @@ bool Board::undoMove(bool realMove) {
         if (realMove)board[lastOldX][rookY]->notifyObservers(lastOldX, rookY);
         board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
         board[lastOldX][rookNewY] = make_unique<NullPiece>(lastOldX, rookNewY, *this);
+        // update last move if movehistory isn't empty
         if (!movesHistory.empty()) {
             lastOldX = movesHistory.top().lastOldX;
             lastOldY = movesHistory.top().lastOldY;
@@ -582,6 +588,7 @@ bool Board::undoMove(bool realMove) {
         return true;
     } 
         
+    // update last move if movehistory isn't empty
     if (!movesHistory.empty()) {
         lastOldX = movesHistory.top().lastOldX;
         lastOldY = movesHistory.top().lastOldY;

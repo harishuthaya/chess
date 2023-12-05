@@ -27,6 +27,7 @@ vector<vector<string>> Computer::generateAllMoves() {
                 for (int newX = 0; newX < board->getSize(); newX++) {
                     for (int newY = 0; newY < board->getSize(); newY++) {
                         if (board->simulateMove(x, y, newX, newY, getColour())) {
+                            // Check if it puts king in check
                             if (board->isCheck(getColour())) {
                                 board->undoMove(false);
                                 continue;
@@ -52,38 +53,55 @@ vector<string> Computer::generateLevel1() {
 vector<string> Computer::generateLevel2() {
     vector<vector<string>> capturesAndChecks;
     vector<vector<string>> otherLegalMoves;
-
+    vector<vector<string>> legalMoves = generateAllMoves();
     Colour playerColour = getColour();
     Colour enemyColour = (playerColour == Colour::White) ? Colour::Black : Colour::White;
-    int size = board->getSize();
-    for (int x = 0; x < size; ++x) {
-        for (int y = 0; y < size; ++y) {
-            Piece* piece = board->getPiece(x, y);
-            if (!piece->isEmpty() && piece->getColour() == playerColour) {
-                for (int newX = 0; newX < size; ++newX) {
-                    for (int newY = 0; newY < size; ++newY) {
-                        if (board->simulateMove(x, y, newX, newY, playerColour)) {
-                            if (board->isCheck(playerColour)) {
-                                board->undoMove(false);
-                                continue;
-                            }
-                            bool enemyChecked = board->isCheck(enemyColour);
-                            MoveResult result = board->getLastMoveResult();
-                            board->undoMove(false);
 
-                            // MoveResult result = piece->moveSuccess(newX, newY);
-                            if (result != MoveResult::Failure) piece->setPosition(x, y);
-                            if (enemyChecked || result == MoveResult::Capture) {
-                                capturesAndChecks.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
-                            } else {
-                                otherLegalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
-                            }
-                        } 
-                    }
-                }
+    for (const auto& move : legalMoves) {
+        vector<int> start = convert(move[0]);
+        vector<int> end = convert(move[1]);
+        Piece* piece = board->getPiece(start[0], start[1]);
+        if (board->simulateMove(start[0], start[1], end[0], end[1], playerColour)) {
+            bool enemyChecked = board->isCheck(enemyColour);
+            MoveResult result = board->getLastMoveResult();
+            board->undoMove(false);
+
+            if (result != MoveResult::Failure) piece->setPosition(start[0], start[1]);
+            if (enemyChecked || result == MoveResult::Capture) {
+                capturesAndChecks.emplace_back(vector<string>{convertCoords(start[0], start[1]), convertCoords(end[0], end[1])});
+            } else {
+                otherLegalMoves.emplace_back(vector<string>{convertCoords(start[0], start[1]), convertCoords(end[0], end[1])});
             }
         }
     }
+    // int size = board->getSize();
+    // for (int x = 0; x < size; ++x) {
+    //     for (int y = 0; y < size; ++y) {
+    //         Piece* piece = board->getPiece(x, y);
+    //         if (!piece->isEmpty() && piece->getColour() == playerColour) {
+    //             for (int newX = 0; newX < size; ++newX) {
+    //                 for (int newY = 0; newY < size; ++newY) {
+    //                     if (board->simulateMove(x, y, newX, newY, playerColour)) {
+    //                         if (board->isCheck(playerColour)) {
+    //                             board->undoMove(false);
+    //                             continue;
+    //                         }
+    //                         bool enemyChecked = board->isCheck(enemyColour);
+    //                         MoveResult result = board->getLastMoveResult();
+    //                         board->undoMove(false);
+
+    //                         if (result != MoveResult::Failure) piece->setPosition(x, y);
+    //                         if (enemyChecked || result == MoveResult::Capture) {
+    //                             capturesAndChecks.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
+    //                         } else {
+    //                             otherLegalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
+    //                         }
+    //                     } 
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
     if (capturesAndChecks.size() > 0) return capturesAndChecks[rand() % capturesAndChecks.size()];
     return otherLegalMoves[rand() % otherLegalMoves.size()];
 
@@ -92,44 +110,65 @@ vector<string> Computer::generateLevel2() {
 vector<string> Computer::generateLevel3() {
     vector<vector<string>> capturesChecksAndAvoids;
     vector<vector<string>> otherLegalMoves;
+    vector<vector<string>> legalMoves = generateAllMoves();
 
     Colour playerColour = getColour();
     Colour enemyColour = (playerColour == Colour::White) ? Colour::Black : Colour::White;
-    int size = board->getSize();
-    for (int x = 0; x < size; ++x) {
-        for (int y = 0; y < size; ++y) {
-            Piece* piece = board->getPiece(x, y);
-            if (!piece->isEmpty() && piece->getColour() == playerColour) {
-                bool beforeUnderAttack = board->isUnderAttack(x, y, playerColour);
-                for (int newX = 0; newX < size; ++newX) {
-                    for (int newY = 0; newY < size; ++newY) {
-                        if (board->simulateMove(x, y, newX, newY, playerColour)) {
-                            if (board->isCheck(playerColour)) {
-                                board->undoMove(false);
-                                continue;
-                            }
-                            bool afterUnderAttack = board->isUnderAttack(newX, newY, playerColour);
-                            bool enemyChecked = board->isCheck(enemyColour);
-                            MoveResult result = board->getLastMoveResult();
-                            board->undoMove(false);
-                            // MoveResult result = piece->moveSuccess(newX, newY);
-                            if (result != MoveResult::Failure) piece->setPosition(x, y);
-                            if (enemyChecked || result == MoveResult::Capture || (beforeUnderAttack && !afterUnderAttack)) {
-                                capturesChecksAndAvoids.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
-                            } else {
-                                otherLegalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
-                            }
-                        } 
-                    }
-                }
+
+        for (const auto& move : legalMoves) {
+        vector<int> start = convert(move[0]);
+        vector<int> end = convert(move[1]);
+        Piece* piece = board->getPiece(start[0], start[1]);
+        bool beforeUnderAttack = board->isUnderAttack(start[0], start[1], playerColour);
+        if (board->simulateMove(start[0], start[1], end[0], end[1], playerColour)) {
+            bool afterUnderAttack = board->isUnderAttack(end[0], end[1], playerColour);
+            bool enemyChecked = board->isCheck(enemyColour);
+            MoveResult result = board->getLastMoveResult();
+            board->undoMove(false);
+            if (result != MoveResult::Failure) piece->setPosition(start[0], start[1]);
+            if (enemyChecked || result == MoveResult::Capture || (beforeUnderAttack && !afterUnderAttack)) {
+                capturesChecksAndAvoids.emplace_back(vector<string>{convertCoords(start[0], start[1]), convertCoords(end[0], end[1])});
+            } else {
+                otherLegalMoves.emplace_back(vector<string>{convertCoords(start[0], start[1]), convertCoords(end[0], end[1])});
             }
         }
     }
+
+    // int size = board->getSize();
+    // for (int x = 0; x < size; ++x) {
+    //     for (int y = 0; y < size; ++y) {
+    //         Piece* piece = board->getPiece(x, y);
+    //         if (!piece->isEmpty() && piece->getColour() == playerColour) {
+    //             bool beforeUnderAttack = board->isUnderAttack(x, y, playerColour);
+    //             for (int newX = 0; newX < size; ++newX) {
+    //                 for (int newY = 0; newY < size; ++newY) {
+    //                     if (board->simulateMove(x, y, newX, newY, playerColour)) {
+    //                         if (board->isCheck(playerColour)) {
+    //                             board->undoMove(false);
+    //                             continue;
+    //                         }
+    //                         bool afterUnderAttack = board->isUnderAttack(newX, newY, playerColour);
+    //                         bool enemyChecked = board->isCheck(enemyColour);
+    //                         MoveResult result = board->getLastMoveResult();
+    //                         board->undoMove(false);
+    //                         if (result != MoveResult::Failure) piece->setPosition(x, y);
+    //                         if (enemyChecked || result == MoveResult::Capture || (beforeUnderAttack && !afterUnderAttack)) {
+    //                             capturesChecksAndAvoids.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
+    //                         } else {
+    //                             otherLegalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
+    //                         }
+    //                     } 
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
     if (capturesChecksAndAvoids.size() > 0) return capturesChecksAndAvoids[rand() % capturesChecksAndAvoids.size()];
     return otherLegalMoves[rand() % otherLegalMoves.size()];
 }
 
-vector<int> convert(const string& coords) {
+
+vector<int> Computer::convert(const string& coords) const {
     int col = coords[0] - 'a';
     int row = 8 - (coords[1] - '0');
     return vector<int>{row, col};
@@ -146,6 +185,7 @@ vector<string> Computer::generateLevel4() {
 
         int score = scoreMove(start[0], start[1], end[0], end[1]);
 
+        // reset vector if found a move with better score
         if (score > maxScore) {
             bestMove.clear();
             bestMove.emplace_back(move);
@@ -161,6 +201,8 @@ vector<string> Computer::generateLevel4() {
 int Computer::scoreMove(int startX, int startY, int endX, int endY) {
     int score = 0;
 
+    bool beforeUnderAttack = board->isUnderAttack(startX, startY, getColour());
+
     board->simulateMove(startX, startY, endX, endY, getColour());
     Colour enemyColour = (getColour() == Colour::White) ? Colour::Black : Colour::White;
 
@@ -175,11 +217,14 @@ int Computer::scoreMove(int startX, int startY, int endX, int endY) {
 
     MoveResult result = board->getLastMoveResult();
 
-    if (!board->isUnderAttack(endX, endY, getColour())) {
+    bool afterUnderAttack = board->isUnderAttack(endX, endY, getColour());
+    if (beforeUnderAttack && !afterUnderAttack) {
         score += score + 100;
+    } else if (!afterUnderAttack) {
+        score += score + 70;
     }
 
-    // Captures, prioritize by piece value
+    // EnPassant, Pormote, Castle
     if (result == MoveResult::EnPassant) {
         score += 20;
         board->undoMove(false);
@@ -198,6 +243,7 @@ int Computer::scoreMove(int startX, int startY, int endX, int endY) {
         return score;
     }
 
+    // Captures, prioritize by piece value
     if (result == MoveResult::Capture) {
         board->undoMove(false);
         Piece* piece = board->getPiece(endX, endY);
@@ -225,7 +271,7 @@ int Computer::getPieceValue(Type pieceType) {
         case Type::King:
             return 900; // King has a high value, typically used to indicate checkmate scenarios
         default:
-            return 0; // In case of an unrecognized piece type
+            return 0; // empty piece
     }
 }
 

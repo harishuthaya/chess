@@ -36,6 +36,7 @@ void Piece::attach(Observer *o) {
 }
 
 void Piece::notifyObservers(int oldX, int oldY) const {
+    // notify all observers
     for (auto ob : observers) {
         ob->notify(*this, oldX, oldY);
     }

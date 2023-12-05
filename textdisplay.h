@@ -12,8 +12,8 @@ class TextDisplay: public Observer {
  public:
   TextDisplay(int n); 
 
-  void notify(const Piece &p, int oldX, int oldY) override; // Notifies the display about a change 
-                                                            // in a piece's state or position.
+  // Notifies the display about a change in a piece's state or position.
+  void notify(const Piece &p, int oldX, int oldY) override;
 
   ~TextDisplay();
 
