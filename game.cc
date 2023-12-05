@@ -129,7 +129,6 @@ void Game::init(string p1, string p2) {
     chessboard = make_unique<Board>(td.get(), gd.get());
     chessboard->init();
   }
-
   this->addPlayer(p1, Colour::White);
   this->addPlayer(p2, Colour::Black);
   

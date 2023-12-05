@@ -23,7 +23,9 @@ int main()
             game.resign(game.getTurn());
         } else if (cmd == "move" && game.isGameActive()) {
             game.move(game.getTurn());
-            std::cout << game;
+            if (game.isGameActive()) {
+                std::cout << game;
+            }
         } else if (cmd == "setup" && !game.isGameActive()) {
             game.setUp();
             std::cout << game;
