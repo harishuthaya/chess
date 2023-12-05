@@ -15,6 +15,9 @@ class Computer: public Player {
     std::vector<std::string> generateLevel2();
     std::vector<std::string> generateLevel3();
     std::vector<std::string> generateLevel4();
+    int evaluateBoard();
+    int minimax(int depth, int alpha, int beta, bool maximizingPlayer);
+    std::vector<std::vector<std::string>> generateAllMoves();
 
     public: 
         Computer(Colour colour, int level, Board *board);
