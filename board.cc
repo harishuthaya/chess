@@ -87,12 +87,15 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
     if(isCheckmate(Colour::White)) {
         cout << "Checkmate! Black wins!" << endl;
         winState = WinState::Player2Win;
+        return true;
     }  else if (isCheckmate(Colour::Black)) {
         cout << "Checkmate! White wins!" << endl;
         winState = WinState::Player1Win;
+        return true;
     } else if (isStalemate(Colour::White) || isStalemate(Colour::Black)) {
         cout << "Stalemate!" << endl;
         winState = WinState::Tie;
+        return true;
     } 
 
     if (isCheck(opponentColour)) {
