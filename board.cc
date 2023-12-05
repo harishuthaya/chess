@@ -551,8 +551,8 @@ bool Board::undoMove(bool realMove) {
         int newY = lastMove->getY();
         Colour pieceColour = board[newX][newY]->getColour();
         board[lastOldX][lastOldY] = make_unique<Pawn>(lastOldX, lastOldY, pieceColour, *this);
-        board[lastOldX][lastOldY]->attach(td);
-        board[lastOldX][lastOldY]->attach(gd);
+        if (realMove) board[lastOldX][lastOldY]->attach(td);
+        if (realMove) board[lastOldX][lastOldY]->attach(gd);
         board[newX][newY] = std::move(lastCaptured);
         board[newX][newY]->setPosition(newX, newY);
         if (realMove) board[newX][newY]->notifyObservers(newX, newY); 
