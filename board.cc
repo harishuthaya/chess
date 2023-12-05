@@ -121,6 +121,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
 
     if (lastMoveResult != MoveResult::Failure) {
         movesHistory.push(Move(lastOldX, lastOldY, lastMove, lastMoveResult, lastMoveHasMoveState, lastCapturedHasMoveState, std::move(lastCaptured)));
+        lastMoveResult = MoveResult::Failure;
     }
     
     lastMoveHasMoveState = board[x][y]->getHasMoved();
@@ -151,6 +152,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
             board[x][y]->notifyObservers(x, y);
             board[x][rookY]->setPosition(x, rookY);
             board[x][rookY]->notifyObservers(x, rookY);
+            lastMoveResult = MoveResult::Failure;
             return false;
         }
         lastCaptured = nullptr;
@@ -179,6 +181,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
             board[capturedPawnX][capturedPawnY]->attach(td);
             board[capturedPawnX][capturedPawnY]->attach(gd);
             cerr << "illegal move to put the king in check" << endl;
+            lastMoveResult = MoveResult::Failure;
             return false;
         }
 
@@ -204,6 +207,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         cerr << "illegal move to put the king in check" << endl;
         board[newX][newY]->attach(td);
         board[newX][newY]->attach(gd);
+        lastMoveResult = MoveResult::Failure;
         return false;
     }
     
@@ -453,6 +457,7 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
 
     if (lastMoveResult != MoveResult::Failure) {
         movesHistory.push(Move(lastOldX, lastOldY, lastMove, lastMoveResult, lastMoveHasMoveState, lastCapturedHasMoveState, std::move(lastCaptured)));
+        lastMoveResult = MoveResult::Failure;
     }
     
     lastMoveHasMoveState = board[x][y]->getHasMoved();
@@ -480,6 +485,7 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
             board[x][rookY]->setHasMoved(false);
             board[x][y]->setPosition(x, y);
             board[x][rookY]->setPosition(x, rookY);
+            lastMoveResult = MoveResult::Failure;
             return false;
         }
         lastCaptured = nullptr;
@@ -502,6 +508,7 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
             board[x][y]->setPosition(x, y);
             board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
             board[capturedPawnX][capturedPawnY] = std::move(tempDest);
+            lastMoveResult = MoveResult::Failure;
             // board[newX][newY]->attach(td);
             // board[capturedPawnX][capturedPawnY]->attach(td);
             return false;
@@ -524,6 +531,7 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
         board[newX][newY]->setPosition(x, y);
         board[x][y] = std::move(board[newX][newY]);
         board[newX][newY] = std::move(tempDest);
+        lastMoveResult = MoveResult::Failure;
         // board[newX][newY]->attach(td);
         return false;
     }
