@@ -26,7 +26,7 @@ vector<string> Computer::generateLevel1() {
                 for (int newX = 0; newX < board->getSize(); newX++) {
                     for (int newY = 0; newY < board->getSize(); newY++) {
                         if (board->simulateMove(x, y, newX, newY, getColour())) {
-                            board->undoMove(false);
+                            if (board->isCheck(playerColour)) board->undoMove(false);
                             legalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
                         }
                     }
