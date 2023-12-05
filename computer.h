@@ -18,7 +18,7 @@ class Computer: public Player {
 
     public: 
         Computer(Colour colour, int level, Board *board);
-        std::vector<std::string> getMove() const override;
+        std::vector<std::string> getMove() override;
         char getPromotion() const override;
 };
 

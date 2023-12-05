@@ -12,7 +12,7 @@ class Player {
     public:
         Player(Colour colour);
         virtual ~Player() = default;
-        virtual std::vector<std::string> getMove() const = 0;
+        virtual std::vector<std::string> getMove() = 0;
         float getScore() const;
         Colour getColour() const;
         void incrementScore(float i);

@@ -9,7 +9,7 @@ Human::Human(Colour colour):
 
 }
 
-vector<string> Human::getMove() const {
+vector<string> Human::getMove() {
     vector<string> moves{2, ""};
     cin >> moves[0] >> moves[1];
     return moves;
