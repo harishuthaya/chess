@@ -99,7 +99,7 @@ void Game::addPiece(char piece, string coords) {
 }
 
 void Game::undo() {
-  bool result = chessboard->undoMove();
+  bool result = chessboard->undoMove(true);
   if (result) {
     turn = (turn == Colour::White) ? Colour::Black : Colour::White;
   }

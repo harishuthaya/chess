@@ -77,8 +77,8 @@ class Board {
         bool isOneKing() const;
         bool isPawnCorrect() const;
         friend std::ostream &operator<<(std::ostream &out, const Board &b);
-        bool stimulateMove(int x, int y, int newX, int newY, Colour playerColour);
-        bool undoMove();
+        bool simulateMove(int x, int y, int newX, int newY, Colour playerColour);
+        bool undoMove(bool realMove);
 };
 
 #endif

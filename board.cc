@@ -125,6 +125,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         lastMoveResult = result;
         return false;
     }
+    board[x][y]->notifyObservers(x, y);
 
     if (result == MoveResult::Castle) {
         int rookY = (newY > y) ? boardSize - 1 : 0;
@@ -142,7 +143,9 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
             board[x][y].get()->setHasMoved(false);
             board[x][rookY].get()->setHasMoved(false);
             board[x][y].get()->setPosition(x, y);
+            board[x][y]->notifyObservers(x, y);
             board[x][rookY]->setPosition(x, rookY);
+            board[x][rookY]->notifyObservers(x, rookY);
             return false;
         }
         lastCaptured = nullptr;
@@ -163,6 +166,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
         if (isCheck(pieceColour)) {
             board[x][y] = std::move(board[newX][newY]);
             board[x][y].get()->setPosition(x, y);
+            board[x][y]->notifyObservers(x, y);
             board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
             board[capturedPawnX][capturedPawnY] = std::move(tempDest);
             board[newX][newY]->attach(td);
@@ -344,12 +348,12 @@ bool Board::isCheckmate(Colour playerColour) {
             if (!piece->isEmpty() && piece->getColour() == playerColour) {
                 for (int newX = 0; newX < boardSize; newX++) {
                     for (int newY = 0; newY < boardSize; newY++) {
-                        if (stimulateMove(x, y, newX, newY, playerColour)) {
+                        if (simulateMove(x, y, newX, newY, playerColour)) {
                             if (!isCheck(playerColour)) {
-                                undoMove();
+                                undoMove(false);
                                 return false;
                             }
-                            undoMove();
+                            undoMove(false);
                         }
                     }
                 }
@@ -367,8 +371,8 @@ bool Board::isStalemate(Colour playerColour) {
             if (!piece->isEmpty() && piece->getColour() == playerColour) {
                 for (int newX = 0; newX < boardSize; newX++) {
                     for (int newY = 0; newY < boardSize; newY++) {
-                        if (stimulateMove(x, y, newX, newY, playerColour)) {
-                            undoMove();
+                        if (simulateMove(x, y, newX, newY, playerColour)) {
+                            undoMove(false);
                             return false;
                         }
                     }
@@ -426,7 +430,7 @@ ostream &operator<<(ostream &out, const Board &b) {
   return out;
 }
 
-bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour) {
+bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) {
     if (newX < 0 || newX >= boardSize || newY < 0 || newY >= boardSize ||
         x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
         return false;
@@ -453,6 +457,7 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
         lastMoveResult = result;
         return false;
     }
+    // board[newX][newY]->notifyObservers(x, y);
 
     if (result == MoveResult::Castle) {
         int rookY = (newY > y) ? boardSize - 1 : 0;
@@ -492,13 +497,13 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
             board[x][y].get()->setPosition(x, y);
             board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
             board[capturedPawnX][capturedPawnY] = std::move(tempDest);
-            board[newX][newY]->attach(td);
-            board[capturedPawnX][capturedPawnY]->attach(td);
+            // board[newX][newY]->attach(td);
+            // board[capturedPawnX][capturedPawnY]->attach(td);
             return false;
         }
 
-        board[capturedPawnX][capturedPawnY]->attach(td);
-        board[x][y]->attach(td);
+        // board[capturedPawnX][capturedPawnY]->attach(td);
+        // board[x][y]->attach(td);
         lastCaptured = std::move(tempDest);
         lastMove = board[newX][newY].get();
         lastOldX = x;
@@ -514,11 +519,11 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
         board[newX][newY]->setPosition(x, y);
         board[x][y] = std::move(board[newX][newY]);
         board[newX][newY] = std::move(tempDest);
-        board[newX][newY]->attach(td);
+        // board[newX][newY]->attach(td);
         return false;
     }
     
-    board[x][y]->attach(td);
+    // board[x][y]->attach(td);
     lastCaptured = std::move(tempDest);
     lastMove = board[newX][newY].get();
     lastOldX = x;
@@ -527,14 +532,16 @@ bool Board::stimulateMove(int x, int y, int newX, int newY, Colour playerColour)
     return true;
 }
 
-bool Board::undoMove() {
+bool Board::undoMove(bool realMove) {
     if (lastMoveResult == MoveResult::Move) {
         int newX = lastMove->getX();
         int newY = lastMove->getY();
         board[lastOldX][lastOldY] = std::move(board[newX][newY]);
         board[newX][newY] = std::move(lastCaptured);
         board[lastOldX][lastOldY].get()->setPosition(lastOldX, lastOldY);
+        if (realMove) board[lastOldX][lastOldY]->notifyObservers(lastOldX, lastOldY);
         board[newX][newY].get()->setPosition(newX, newY);
+        if (realMove) board[newX][newY]->notifyObservers(newX, newY);
         board[lastOldX][lastOldY].get()->setHasMoved(lastMoveHasMoveState);
         board[newX][newY].get()->setHasMoved(lastCapturedHasMoveState);
         if (!movesHistory.empty()) {
@@ -556,11 +563,14 @@ bool Board::undoMove() {
         int capturedPawnY = newY;
         board[lastOldX][lastOldY] = std::move(board[newX][newY]);
         board[lastOldX][lastOldY].get()->setPosition(lastOldX, lastOldY);
+        if (realMove)board[lastOldX][lastOldY]->notifyObservers(lastOldX, lastOldY);
         board[lastOldX][lastOldY].get()->setHasMoved(lastMoveHasMoveState);
         board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
-        board[newX][newY]->attach(td);
+        if (realMove)board[newX][newY]->attach(td);
+        if (realMove)board[newX][newY]->attach(gd);
         board[capturedPawnX][capturedPawnY] = std::move(lastCaptured);
         board[capturedPawnX][capturedPawnY]->setPosition(capturedPawnX, capturedPawnY);
+        if (realMove)board[capturedPawnX][capturedPawnY]->notifyObservers(capturedPawnX, capturedPawnY);
         board[capturedPawnX][capturedPawnY]->setHasMoved(lastCapturedHasMoveState);
         if (!movesHistory.empty()) {
             lastOldX = movesHistory.top().lastOldX;
@@ -582,9 +592,11 @@ bool Board::undoMove() {
         board[lastOldX][lastOldY] = std::move(board[newX][newY]);
         board[lastOldX][lastOldY].get()->setHasMoved(false);
         board[lastOldX][lastOldY].get()->setPosition(lastOldX, lastOldY);
+        if (realMove)board[lastOldX][lastOldY]->notifyObservers(lastOldX, lastOldY);
         board[lastOldX][rookY] = std::move(board[lastOldX][rookNewY]);
         board[lastOldX][rookY].get()->setHasMoved(false);
         board[lastOldX][rookY]->setPosition(lastOldX, rookY);
+        if (realMove)board[lastOldX][rookY]->notifyObservers(lastOldX, rookY);
         board[newX][newY] = make_unique<NullPiece>(newX, newY, *this);
         board[lastOldX][rookNewY] = make_unique<NullPiece>(lastOldX, rookNewY, *this);
         if (!movesHistory.empty()) {
@@ -608,7 +620,7 @@ bool Board::undoMove() {
             lastMoveResult = movesHistory.top().moveResult;
             lastCaptured = std::move(movesHistory.top().lastCaptured);
             movesHistory.pop();
-            undoMove();
+            undoMove(true);
         }
     }
 
@@ -622,6 +634,7 @@ void Board::clear() {
             board[i][j] = make_unique<NullPiece>(i, j, *this);
             // Re-attach the TextDisplay observer
             board[i][j]->attach(td);
+            board[i][j]->attach(gd);
         }
     }
 

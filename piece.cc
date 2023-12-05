@@ -22,7 +22,7 @@ void Piece::setPosition(int newX, int newY) {
     int oldY = y;
     x = newX;
     y = newY;
-    notifyObservers(oldX, oldY);
+    // notifyObservers(oldX, oldY);
 }
 
 bool Piece::isEmpty() const {
