@@ -9,12 +9,36 @@ Computer::Computer(Colour colour, int level, Board *board):
 
 }
 
-std::vector<std::string> Computer::generateLevel1() {
-    vector<vector<string>> legalMoves;
-    
+string Computer::convertCoords(int x, int y) const {
+    string coords;
+    coords += y + 'a';
+    coords += (board->getSize() - x) + '0';
+    return coords;
 }
 
-std::vector<std::string> Computer::generateLevel2() {
+vector<string> Computer::generateLevel1() {
+    vector<vector<string>> legalMoves;
+
+    for (int x = 0; x < board->getSize(); ++x) {
+        for (int y = 0; y < board->getSize(); ++y) {
+            Piece* piece = board->getPiece(x, y);
+            if (!piece->isEmpty() && piece->getColour() == getColour()) {
+                for (int newX = 0; newX < board->getSize(); newX++) {
+                    for (int newY = 0; newY < board->getSize(); newY++) {
+                        if (board->simulateMove(x, y, newX, newY, getColour())) {
+                            board->undoMove(false);
+                            legalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return legalMoves[rand() % legalMoves.size()];
+}
+
+vector<string> Computer::generateLevel2() {
     vector<vector<string>> capturesAndChecks;
     vector<vector<string>> otherLegalMoves;
 
@@ -34,9 +58,9 @@ std::vector<std::string> Computer::generateLevel2() {
                             MoveResult result = piece->moveSuccess(newX, newY);
                             if (result != MoveResult::Failure) piece->setPosition(x, y);
                             if (enemyChecked || result == MoveResult::Capture) {
-                                // APPEND TO CAPTURESANDCHECKS
+                                capturesAndChecks.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
                             } else {
-                                // APPEND TO OTHERLEGALMOVES
+                                otherLegalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
                             }
                         } 
                     }
@@ -48,7 +72,7 @@ std::vector<std::string> Computer::generateLevel2() {
 
 }
 
-std::vector<std::string> Computer::generateLevel3() {
+vector<string> Computer::generateLevel3() {
     vector<vector<string>> capturesChecksAndAvoids;
     vector<vector<string>> otherLegalMoves;
 
@@ -89,9 +113,9 @@ std::vector<std::string> Computer::generateLevel3() {
                             MoveResult result = piece->moveSuccess(newX, newY);
                             if (result != MoveResult::Failure) piece->setPosition(x, y);
                             if (enemyChecked || result == MoveResult::Capture || enemyCapturePossible) {
-                                // APPEND TO CAPTURESANDCHECKS
+                                capturesChecksAndAvoids.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
                             } else {
-                                // APPEND TO OTHERLEGALMOVES
+                                otherLegalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
                             }
                         } 
                     }
@@ -101,7 +125,7 @@ std::vector<std::string> Computer::generateLevel3() {
     }
 }
 
-std::vector<std::string> Computer::generateLevel4() {
+vector<string> Computer::generateLevel4() {
 
 }
 

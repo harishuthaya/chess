@@ -10,7 +10,6 @@ int main()
     Xwindow xw{};
     string cmd;
     Game game{xw};
-
     while (true) {
         cin >> cmd;
         if (cin.eof()) break;
