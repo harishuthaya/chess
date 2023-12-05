@@ -84,20 +84,24 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
 
     Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
 
+    if(isCheckmate(Colour::White)) {
+        cout << "Checkmate! Black wins!" << endl;
+        winState = WinState::Player2Win;
+        return true;
+    }  else if (isCheckmate(Colour::Black)) {
+        cout << "Checkmate! White wins!" << endl;
+        winState = WinState::Player1Win;
+        return true;
+    } else if (isStalemate(Colour::White) || isStalemate(Colour::Black)) {
+        cout << "Stalemate!" << endl;
+        winState = WinState::Tie;
+        return true;
+    } 
+
     if (isCheck(opponentColour)) {
         string s = (opponentColour == Colour::Black) ? "Black" : "White";
         cout << s + " is in check." << endl;
     }
-   if(isCheckmate(Colour::White)) {
-        cout << "Checkmate! Black wins!" << endl;
-        winState = WinState::Player2Win;
-    }  else if (isCheckmate(Colour::Black)) {
-        cout << "Checkmate! White wins!" << endl;
-        winState = WinState::Player1Win;
-    } else if (isStalemate(Colour::White) || isStalemate(Colour::Black)) {
-        cout << "Stalemate!" << endl;
-        winState = WinState::Tie;
-    } 
 
     return true;
 }
@@ -221,19 +225,23 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
 
     Colour opponentColour = (pieceColour == Colour::White) ? Colour::Black : Colour::White;
 
-    if (isCheck(opponentColour)) {
-        string s = (opponentColour == Colour::Black) ? "Black" : "White";
-        cout << s + " is in check." << endl;
-    } 
     if(isCheckmate(Colour::White)) {
         cout << "Checkmate! Black wins!" << endl;
         winState = WinState::Player2Win;
+        return true;
     }  else if (isCheckmate(Colour::Black)) {
         cout << "Checkmate! White wins!" << endl;
         winState = WinState::Player1Win;
+        return true;
     } else if (isStalemate(Colour::White) || isStalemate(Colour::Black)) {
         cout << "Stalemate!" << endl;
         winState = WinState::Tie;
+        return true;
+    } 
+
+    if (isCheck(opponentColour)) {
+        string s = (opponentColour == Colour::Black) ? "Black" : "White";
+        cout << s + " is in check." << endl;
     } 
 
     return true;
@@ -551,8 +559,8 @@ bool Board::undoMove(bool realMove) {
         int newY = lastMove->getY();
         Colour pieceColour = board[newX][newY]->getColour();
         board[lastOldX][lastOldY] = make_unique<Pawn>(lastOldX, lastOldY, pieceColour, *this);
-        board[lastOldX][lastOldY]->attach(td);
-        board[lastOldX][lastOldY]->attach(gd);
+        if (realMove) board[lastOldX][lastOldY]->attach(td);
+        if (realMove) board[lastOldX][lastOldY]->attach(gd);
         board[newX][newY] = std::move(lastCaptured);
         board[newX][newY]->setPosition(newX, newY);
         if (realMove) board[newX][newY]->notifyObservers(newX, newY); 
