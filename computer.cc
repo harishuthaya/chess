@@ -28,7 +28,7 @@ vector<string> Computer::generateLevel1() {
                         if (board->simulateMove(x, y, newX, newY, getColour())) {
                             if (board->isCheck(getColour())) {
                                 board->undoMove(false);
-                                break;
+                                continue;
                             };
                             board->undoMove(false);
                             legalMoves.emplace_back(vector<string>{convertCoords(x, y), convertCoords(newX, newY)});
