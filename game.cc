@@ -23,13 +23,13 @@ void Game::addPlayer(string player, Colour colour) {
   if (player == "human") {
     players.emplace_back(make_unique<Human>(colour));
   } else if (player == "computer1") {
-    players.emplace_back(make_unique<Computer>(colour, 1, chessboard));
+    players.emplace_back(make_unique<Computer>(colour, 1, chessboard.get()));
   } else if (player == "computer2") {
-    players.emplace_back(make_unique<Computer>(colour, 2, chessboard));
+    players.emplace_back(make_unique<Computer>(colour, 2, chessboard.get()));
   } else if (player == "computer3") {
-    players.emplace_back(make_unique<Computer>(colour, 3, chessboard));
+    players.emplace_back(make_unique<Computer>(colour, 3, chessboard.get()));
   } else if (player == "computer4") {
-    players.emplace_back(make_unique<Computer>(colour, 4, chessboard));
+    players.emplace_back(make_unique<Computer>(colour, 4, chessboard.get()));
   }
 }
 
