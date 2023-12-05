@@ -5,10 +5,16 @@
 #include <vector>
 using namespace std;
 
-int main()
+int main(int argc, char *argv[])
 {   
     Xwindow xw{};
     string cmd;
+
+    bool undoEnabled = false;
+    string flag = argc > 1 ? argv[argc - 1] : "";
+    if (flag == "-enablebonus") {
+        undoEnabled = true;
+    }
 
     float player1 = 0;
     float player2 = 0;
@@ -54,7 +60,7 @@ int main()
                     }
                 }
             }
-        } else if (cmd == "undo" && game.isGameActive()) {
+        } else if (cmd == "undo" && game.isGameActive() && undoEnabled) {
             game.undo();
             std::cout << game;
         } else {
