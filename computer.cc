@@ -10,7 +10,8 @@ Computer::Computer(Colour colour, int level, Board *board):
 }
 
 std::vector<std::string> Computer::generateLevel1() {
-
+    vector<vector<string>> legalMoves;
+    
 }
 
 std::vector<std::string> Computer::generateLevel2() {
