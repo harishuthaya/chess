@@ -14,8 +14,8 @@ Game::Game(Xwindow &xw): turn{Colour::White}, gameActive{false}, xw{xw} {
 }
 
 vector<int> Game::convertCoords(string coords) const {
-    int row = chessboard->getSize() - (coords[1] - '0');
     int col = coords[0] - 'a';
+    int row = chessboard->getSize() - (coords[1] - '0');
     return vector<int>{row, col};
 }
 

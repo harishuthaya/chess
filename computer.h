@@ -10,6 +10,7 @@ class Computer: public Player {
     int level;
     Board *board;
 
+    std::string convertCoords(int x, int y) const;
     std::vector<std::string> generateLevel1();
     std::vector<std::string> generateLevel2();
     std::vector<std::string> generateLevel3();
