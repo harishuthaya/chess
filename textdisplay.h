@@ -7,12 +7,13 @@
 class Piece;
 
 class TextDisplay: public Observer {
-  std::vector<std::vector<char>> theDisplay;
-  const int gridSize;
+  std::vector<std::vector<char>> theDisplay; // 2D vector representing the display grid.
+  const int gridSize; // size of the grid
  public:
-  TextDisplay(int n);
+  TextDisplay(int n); 
 
-  void notify(const Piece &p, int oldX, int oldY) override;
+  void notify(const Piece &p, int oldX, int oldY) override; // Notifies the display about a change 
+                                                            // in a piece's state or position.
 
   ~TextDisplay();
 

@@ -270,6 +270,14 @@ void Board::addPiece(char piece, int x, int y) {
     if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
         return;
     }
+
+    Piece* currPiece = getPiece(x, y);
+    if (currPiece->getType() == Type::King && currPiece->getColour() == Colour::Black) {
+        blackKingNum--;
+    } else if (currPiece->getType() == Type::King && currPiece->getColour() == Colour::White) {
+        whiteKingNum--;
+    }
+
     board[x][y].reset();
 
     // Add the piece
