@@ -191,7 +191,7 @@ int Computer::scoreMove(int startX, int startY, int endX, int endY) {
         Piece* capturedPiece = board->getPiece(endX, endY);
         score += getPieceValue(capturedPiece);
     } else {
-        score += 10; // Small score for a regular move
+        score += 0; // regular move
     }
 
     if (!board->isUnderAttack(endX, endY, getColour())) {
