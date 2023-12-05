@@ -76,6 +76,7 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour, c
     lastMove = board[newX][newY].get();
     lastOldX = x;
     lastOldY = y;
+    lastMoveResult = MoveResult::Promote;
     if (board[newX][newY].get()->getType() == Type::Pawn) {
         int playerId = (pieceColour == Colour::Black) ? 2 : 1;
         this->addPiece(c, newX, newY, playerId);
@@ -533,6 +534,33 @@ bool Board::simulateMove(int x, int y, int newX, int newY, Colour playerColour) 
 }
 
 bool Board::undoMove(bool realMove) {
+    if (lastMoveResult == MoveResult::Promote) {
+        int newX = lastMove->getX();
+        int newY = lastMove->getY();
+        Colour pieceColour = board[newX][newY].get()->getColour();
+        board[lastOldX][lastOldY] = make_unique<Pawn>(lastOldX, lastOldY, pieceColour, *this);
+        board[lastOldX][lastOldY]->attach(td);
+        board[lastOldX][lastOldY]->attach(gd);
+        board[newX][newY] = std::move(lastCaptured);
+        board[newX][newY].get()->setPosition(newX, newY);
+        if (realMove) board[newX][newY]->notifyObservers(newX, newY); 
+        board[lastOldX][lastOldY].get()->setHasMoved(lastMoveHasMoveState);
+        board[newX][newY].get()->setHasMoved(lastCapturedHasMoveState);
+        if (!movesHistory.empty()) {
+            lastOldX = movesHistory.top().lastOldX;
+            lastOldY = movesHistory.top().lastOldY;
+            lastMove = movesHistory.top().lastMove;
+            lastCapturedHasMoveState = movesHistory.top().lastCapturedHasMoveState;
+            lastMoveHasMoveState = movesHistory.top().lastMoveHasMoveState;
+            lastMoveResult = movesHistory.top().moveResult;
+            lastCaptured = std::move(movesHistory.top().lastCaptured);
+            movesHistory.pop();
+        } else {
+            lastMoveResult = MoveResult::Failure;
+        }
+        return true;
+    }
+
     if (lastMoveResult == MoveResult::Move) {
         int newX = lastMove->getX();
         int newY = lastMove->getY();
@@ -553,9 +581,13 @@ bool Board::undoMove(bool realMove) {
             lastMoveResult = movesHistory.top().moveResult;
             lastCaptured = std::move(movesHistory.top().lastCaptured);
             movesHistory.pop();
+        } else {
+            lastMoveResult = MoveResult::Failure;
         }
         return true;
     }
+
+
     if (lastMoveResult == MoveResult::EnPassant) {
         int newX = lastMove->getX();
         int newY = lastMove->getY();
@@ -581,6 +613,8 @@ bool Board::undoMove(bool realMove) {
             lastMoveResult = movesHistory.top().moveResult;
             lastCaptured = std::move(movesHistory.top().lastCaptured);
             movesHistory.pop();
+        } else {
+            lastMoveResult = MoveResult::Failure;
         }
         return true;
     }
@@ -608,20 +642,22 @@ bool Board::undoMove(bool realMove) {
             lastMoveResult = movesHistory.top().moveResult;
             lastCaptured = std::move(movesHistory.top().lastCaptured);
             movesHistory.pop();
+        } else {
+            lastMoveResult = MoveResult::Failure;
         }
         return true;
-    } else {
-        if (!movesHistory.empty()) {
-            lastOldX = movesHistory.top().lastOldX;
-            lastOldY = movesHistory.top().lastOldY;
-            lastMove = movesHistory.top().lastMove;
-            lastCapturedHasMoveState = movesHistory.top().lastCapturedHasMoveState;
-            lastMoveHasMoveState = movesHistory.top().lastMoveHasMoveState;
-            lastMoveResult = movesHistory.top().moveResult;
-            lastCaptured = std::move(movesHistory.top().lastCaptured);
-            movesHistory.pop();
-            undoMove(true);
-        }
+    } 
+        
+    if (!movesHistory.empty()) {
+        lastOldX = movesHistory.top().lastOldX;
+        lastOldY = movesHistory.top().lastOldY;
+        lastMove = movesHistory.top().lastMove;
+        lastCapturedHasMoveState = movesHistory.top().lastCapturedHasMoveState;
+        lastMoveHasMoveState = movesHistory.top().lastMoveHasMoveState;
+        lastMoveResult = movesHistory.top().moveResult;
+        lastCaptured = std::move(movesHistory.top().lastCaptured);
+        movesHistory.pop();
+        undoMove(true);
     }
 
     return false;
