@@ -42,6 +42,14 @@ Xwindow::Xwindow(int width, int height) {
 
   XSetForeground(d,gc,colours[Black]);
 
+  string fontname = "-adobe-helvetica-bold-r-normal--0-0-0-0-p-0-iso8859-15";
+  XFontStruct * font = XLoadQueryFont(d, fontname.c_str());
+ if (! font ) {
+        cerr << "unable to load font " << fontname << ": using fixed" << endl;
+        font = XLoadQueryFont(d, "lucidasans-12");
+  }
+  XSetFont(d, gc, font->fid);
+
   // Make window non-resizeable.
   XSizeHints hints;
   hints.flags = (USPosition | PSize | PMinSize | PMaxSize );
@@ -66,6 +74,14 @@ void Xwindow::fillRectangle(int x, int y, int width, int height, int colour) {
 }
 
 void Xwindow::drawString(int x, int y, string msg) {
-  XDrawString(d, w, DefaultGC(d, s), x, y, msg.c_str(), msg.length());
+   string fontname = "-adobe-helvetica-bold-r-normal--0-0-0-0-p-0-iso8859-15";
+  XFontStruct * font = XLoadQueryFont(d, fontname.c_str());
+  if (! font ) {
+       cerr << "unable to load font " << fontname << ": using fixed" << endl;
+       font = XLoadQueryFont(d, "lucidasans-12");
+  }
+  XSetFont(d, gc, font->fid);
+
+  XDrawString(d, w, gc, x, y, msg.c_str(), msg.length());
 }
 
