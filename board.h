@@ -19,23 +19,22 @@ class Piece;
 
 enum class WinState { Player1Win, Player2Win, Tie, InProgress };
 
-struct Move {
-    int lastOldX;
-    int lastOldY;
-    Piece* lastMove;
-    MoveResult moveResult;
-    bool lastMoveHasMoveState;
-    bool lastCapturedHasMoveState;
-    std::unique_ptr<Piece> lastCaptured;
-
-    Move(int lastOldX, int lastOldY, Piece* lastMove, MoveResult moveResult, bool lastMoveHasMoveState, bool lastCapturedHasMoveState, std::unique_ptr<Piece>&& lastCaptured): 
-        lastOldX(lastOldX), lastOldY{lastOldY}, lastMove{lastMove}, moveResult(moveResult), lastMoveHasMoveState{lastMoveHasMoveState}, lastCapturedHasMoveState{lastCapturedHasMoveState}, lastCaptured{std::move(lastCaptured)} {
-
-    }
-};
-
 
 class Board {
+    struct Move {
+        int lastOldX;
+        int lastOldY;
+        Piece* lastMove;
+        MoveResult moveResult;
+        bool lastMoveHasMoveState;
+        bool lastCapturedHasMoveState;
+        std::unique_ptr<Piece> lastCaptured;
+
+        Move(int lastOldX, int lastOldY, Piece* lastMove, MoveResult moveResult, bool lastMoveHasMoveState, bool lastCapturedHasMoveState, std::unique_ptr<Piece>&& lastCaptured): 
+            lastOldX(lastOldX), lastOldY{lastOldY}, lastMove{lastMove}, moveResult(moveResult), lastMoveHasMoveState{lastMoveHasMoveState}, lastCapturedHasMoveState{lastCapturedHasMoveState}, lastCaptured{std::move(lastCaptured)} {
+
+        }
+    };
     std::vector<std::vector<std::unique_ptr<Piece>>> board;
     WinState winState;
     const int boardSize = 8;
