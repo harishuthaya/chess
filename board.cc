@@ -172,6 +172,10 @@ bool Board::moveSuccess(int x, int y, int newX, int newY, Colour playerColour) {
             lastMoveResult = MoveResult::Failure;
             return false;
         }
+        board[x][rookNewY]->attach(td);
+        board[x][rookNewY]->attach(gd);
+        board[x][rookY]->attach(td);
+        board[x][rookY]->attach(gd);
         lastCaptured = nullptr;
         lastMoveResult = MoveResult::Castle;
         lastMove = board[newX][newY].get();
